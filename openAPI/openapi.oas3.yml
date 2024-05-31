@@ -23,7 +23,7 @@ paths:
                                 properties:
                                     presigned_url:
                                         type: string
-                            example: https://example-cloud-storage.com/user_drawing.png?signature=...
+                                        example: https://example-cloud-storage.com/user_drawing.png?signature=...
                 "400":
                     description: Invalid request
                     content:
