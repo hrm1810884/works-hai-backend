@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+    title: III-Exhibition works-HAI
+    description: API specification for interactions between Frontend, Backend, and Cloud Storage.
+    version: 1.0.0
+servers:
+    - url: https://frontend.example.com
+      description: Frontend Server
+paths:
+    /upload-url:
+        get:
+            summary: Get presigned URLs for surrounding drawings
+            description: Retrieve presigned URLs for downloading surrounding drawings from cloud storage.
+            tags:
+                - Upload
+            responses:
+                "200":
+                    description: Presigned URL and file URL
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    presigned_url:
+                                        type: string
+                                        example: https://example-cloud-storage.com/user_drawing.png?signature=...
+                "400":
+                    description: Invalid request
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: Invalid input data
+    /human-drawing:
+        post:
+            summary: Upload human drawing
+            description: Upload human drawing using the presigned URL obtained from /upload-url.
+            tags:
+                - Upload
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            properties:
+                                image:
+                                    type: string
+                                    format: binary
+                                    description: The image file to upload
+            responses:
+                "200":
+                    description: Image uploaded successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: Image uploaded successfully
+                "400":
+                    description: Invalid request
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: Invalid input data
+    /saved-url:
+        post:
+            summary: Save drawing URL
+            description: Save drawing URL in storage to BE
+            tags:
+                - Save
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                image:
+                                    type: string
+                                    format: binary
+                                    description: The image file to upload
+            responses:
+                "200":
+                    description: Drawing saved successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: Drawing saved successfully
+                "400":
+                    description: Invalid request
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: Invalid input data
+    /ai-drawing:
+        get:
+            summary: Get 4 surrounding AI-drawings
+            description: Retrieve surrounding drawings only for dev mode.
+            tags:
+                - Dev
+            responses:
+                "200":
+                    description: 4 AI surroundig drawing is got sucessfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    result:
+                                        type: object
+                                        properties:
+                                            topDrawing:
+                                                type: string
+                                            rightDrawing:
+                                                type: string
+                                            bottomDrawing:
+                                                type: string
+                                            leftDrawing:
+                                                type: string
+                                required:
+                                    - result
+
+                            example:
+                                {
+                                    "result":
+                                        {
+                                            "topDrawing": "https://placehold.jp/3697c7/ffffff/512x512.png?text=hoge",
+                                            "rightDrawing": "https://placehold.jp/3697c7/ffffff/512x512.png?text=fuga",
+                                            "bottomDrawing": "https://placehold.jp/3697c7/ffffff/512x512.png?text=piyo",
+                                            "leftDrawing": "https://placehold.jp/3697c7/ffffff/512x512.png?text=blar",
+                                        },
+                                }
+                "400":
+                    description: Bad Request
+                "500":
+                    description: Internal Server Error
+components:
+    securitySchemes:
+        ApiKeyAuth:
+            type: apiKey
+            in: header
+            name: X-API-KEY
+security:
+    - ApiKeyAuth: []
