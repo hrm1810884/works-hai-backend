@@ -3,6 +3,9 @@
 !*/
 !*.*
 
+# Ensure Makefile is not ignored
+!Makefile
+
 # General
 .DS_Store
 .AppleDouble
