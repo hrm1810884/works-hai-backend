@@ -1,0 +1,36 @@
+package config
+
+import (
+	"fmt"
+
+	"github.com/spf13/viper"
+)
+
+// マッピング用の構造体
+type Config struct {
+	Server Server `yaml:"server"`
+}
+
+type Server struct {
+	Dev string `yaml:"dev"`
+}
+
+func Load() (*Config, error) {
+	viper.SetConfigName("config")  // 設定ファイル名を指定
+	viper.SetConfigType("yaml")    // 設定ファイルの形式を指定
+	viper.AddConfigPath("config/") // ファイルのpathを指定
+
+	err := viper.ReadInConfig() // 設定ファイルを探索して読み取る
+	if err != nil {
+		return nil, fmt.Errorf("設定ファイル読み込みエラー: %w", err)
+	}
+
+	var cfg Config
+
+	err = viper.Unmarshal(&cfg)
+	if err != nil {
+		return nil, fmt.Errorf("unmarshal error: %w", err)
+	}
+
+	return &cfg, nil
+}
