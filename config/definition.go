@@ -6,6 +6,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+//REF: https://qiita.com/takehanKosuke/items/1b17ade882b50cf2d737
+
 // マッピング用の構造体
 type Config struct {
 	Server Server `yaml:"server"`

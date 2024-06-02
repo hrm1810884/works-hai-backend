@@ -10,4 +10,4 @@ lint:fmt
 
 build:lint
 	go mod tidy
-	go build cmd/*
+	go build main.go
