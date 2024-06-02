@@ -1,64 +1,101 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
+	"bytes"
 	"fmt"
+	"image"
+	"image/png"
+	"io"
 	"log"
 	"net/http"
-	"time"
+	"os"
+	"path/filepath"
 
-	"github.com/hrm1810884/works-hai-backend/ogen" // パッケージをインポート
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-// MyUploadService は UploadURLGetRes インターフェースを実装するサービスです。
-type MyUploadService struct{}
+func uploadHandler(c echo.Context) error {
+	log.Println("Received upload request")
 
-func (s *MyUploadService) UploadURLGet(ctx context.Context) (ogen.UploadURLGetRes, error) {
-	// URL 生成ロジックをここに記述
-	// 例として固定のURLを返す
-	select {
-	case <-time.After(1 * time.Second): // シミュレーションのための遅延
-		uploadURL := "https://example-cloud-storage.com/user_drawing.png?signature=..."
-		return &ogen.UploadURLGetOK{PresignedURL: ogen.OptString{Value: uploadURL, Set: true}}, nil
-	case <-ctx.Done():
-		return nil, ctx.Err()
+	// 最大ファイルサイズを10MBに制限
+	err := c.Request().ParseMultipartForm(10 << 20)
+	if err != nil {
+		log.Printf("Error parsing multipart form: %v", err)
+		return c.String(http.StatusBadRequest, fmt.Sprintf("Error parsing multipart form: %v", err))
 	}
+
+	file, handler, err := c.Request().FormFile("image")
+	if err != nil {
+		log.Printf("Error retrieving the file: %v", err)
+		return c.String(http.StatusBadRequest, fmt.Sprintf("Error retrieving the file: %v", err))
+	}
+	defer file.Close()
+
+	log.Printf("Uploaded File: %s, Size: %d, MIME: %s", handler.Filename, handler.Size, handler.Header.Get("Content-Type"))
+
+	// アップロードされたファイルをメモリに読み込む
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, file)
+	if err != nil {
+		log.Printf("Error reading the file: %v", err)
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Error reading the file: %v", err))
+	}
+
+	// バイトデータを画像としてデコード
+	img, _, err := image.Decode(&buf)
+	if err != nil {
+		log.Printf("Error decoding image: %v", err)
+		return c.String(http.StatusBadRequest, fmt.Sprintf("Error decoding image: %v", err))
+	}
+
+	// 保存するPNGファイルのパスを指定
+	savePath := filepath.Join("uploads", handler.Filename+".png")
+
+	// 保存するディレクトリが存在しない場合は作成
+	if err := os.MkdirAll(filepath.Dir(savePath), os.ModePerm); err != nil {
+		log.Printf("Error creating directory: %v", err)
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Error creating directory: %v", err))
+	}
+
+	// ファイルを保存
+	destFile, err := os.Create(savePath)
+	if err != nil {
+		log.Printf("Error creating the file: %v", err)
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Error creating the file: %v", err))
+	}
+	defer destFile.Close()
+
+	// 画像をPNG形式でエンコードして保存
+	err = png.Encode(destFile, img)
+	if err != nil {
+		log.Printf("Error encoding image to PNG: %v", err)
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Error encoding image to PNG: %v", err))
+	}
+
+	log.Printf("File uploaded and converted successfully: %s", handler.Filename)
+	return c.String(http.StatusCreated, fmt.Sprintf("File uploaded and converted successfully: %s", handler.Filename))
 }
 
 func main() {
-	uploadService := &MyUploadService{}
+	e := echo.New()
 
-	http.HandleFunc("/upload-url", func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+	// CORSミドルウェアを適用
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{
+			http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions,
+		},
+		AllowHeaders: []string{
+			echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "x-api-key",
+		},
+	}))
 
-		res, err := uploadService.UploadURLGet(ctx)
-		if err != nil {
-			http.Error(w, "Invalid input data", http.StatusBadRequest)
-			return
-		}
+	e.POST("/human-drawing", uploadHandler)
 
-		switch res := res.(type) {
-		case *ogen.UploadURLGetOK:
-			w.Header().Set("Content-Type", "application/json")
-			if err := json.NewEncoder(w).Encode(res); err != nil {
-				http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-			}
-		case *ogen.UploadURLGetBadRequest:
-			http.Error(w, "Invalid input data", http.StatusBadRequest)
-		default:
-			http.Error(w, "Unknown error", http.StatusInternalServerError)
-		}
-	})
-
-	server := &http.Server{
-		Addr:         ":8080",
-		Handler:      nil,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  15 * time.Second,
+	log.Println("Server started at http://localhost:8080")
+	err := e.Start(":8080")
+	if err != nil {
+		log.Fatalf("Error starting server: %v\n", err)
 	}
-
-	fmt.Printf("Server is running on port %s\n", server.Addr)
-	log.Fatal(server.ListenAndServe())
 }
