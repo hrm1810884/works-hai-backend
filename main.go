@@ -4,37 +4,60 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/hrm1810884/works-hai-backend/auth"
 	"github.com/hrm1810884/works-hai-backend/config"
-	"github.com/hrm1810884/works-hai-backend/service/humandrawing"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/hrm1810884/works-hai-backend/ogen"
+	"github.com/hrm1810884/works-hai-backend/service"
 )
 
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// ここでCORSを設定
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, x-api-key")
+
+		// オプションズリクエストに対するプリフライト応答
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// 次のハンドラーを呼び出す
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
-	e := echo.New()
+	// サーバーの初期設定
+	hdl, err := ogen.NewServer(
+		&service.HaiHandler{},
+		&auth.HaiSecurityHandler{},
+	)
 
-	// CORSミドルウェアを適用
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{
-			http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions,
-		},
-		AllowHeaders: []string{
-			echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "x-api-key",
-		},
-	}))
+	if err != nil {
+		log.Fatalf("Failed to initialize server: %v", err)
+	}
 
-	e.POST("/human-drawing", humandrawing.UploadHandler)
-
+	// 設定の読み込み
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
-	fmt.Printf("Server started at %v", cfg.Server.Dev)
-	err = e.Start(cfg.Server.Dev)
-	if err != nil {
-		log.Fatalf("Error starting server: %v\n", err)
+	fmt.Printf("Server started at %v\n", cfg.Server.Dev)
+
+	// サーバーの設定
+	srv := &http.Server{
+		Addr:        cfg.Server.Dev,
+		Handler:     enableCORS(hdl),
+		ReadTimeout: 30 * time.Second,
+	}
+
+	// サーバーの起動
+	if err := srv.ListenAndServe(); err != nil {
+		log.Fatalf("Error starting server: %v", err)
 	}
 }

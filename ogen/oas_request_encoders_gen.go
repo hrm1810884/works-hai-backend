@@ -24,10 +24,8 @@ func encodeHumanDrawingPostRequest(
 
 	q := uri.NewFormEncoder(map[string]string{})
 	body, boundary := ht.CreateMultipartBody(func(w *multipart.Writer) error {
-		if val, ok := request.Image.Get(); ok {
-			if err := val.WriteMultipart("image", w); err != nil {
-				return errors.Wrap(err, "write \"image\"")
-			}
+		if err := request.Image.WriteMultipart("image", w); err != nil {
+			return errors.Wrap(err, "write \"image\"")
 		}
 		if err := q.WriteMultipart(w); err != nil {
 			return errors.Wrap(err, "write multipart")

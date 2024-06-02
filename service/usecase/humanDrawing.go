@@ -1,4 +1,4 @@
-package humandrawing
+package usecase
 
 import (
 	"bytes"
@@ -8,9 +8,10 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 )
 
-func SaveImage(file io.Reader, filename string) error {
+func SaveImage(file io.Reader) error {
 	// アップロードされたファイルをメモリに読み込む
 	var buf bytes.Buffer
 	_, err := io.Copy(&buf, file)
@@ -25,7 +26,10 @@ func SaveImage(file io.Reader, filename string) error {
 	}
 
 	// 保存するPNGファイルのパスを指定
-	savePath := filepath.Join("uploads", filename+".png")
+	currentTime := time.Now()
+	formattedTime := currentTime.Format("20060102_150405")
+	filename := formattedTime + ".png"
+	savePath := filepath.Join("uploads", filename)
 
 	// 保存するディレクトリが存在しない場合は作成
 	if err := os.MkdirAll(filepath.Dir(savePath), os.ModePerm); err != nil {
