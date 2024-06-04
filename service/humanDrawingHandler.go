@@ -25,10 +25,6 @@ func (h *HaiHandler) HumanDrawingPost(ctx context.Context, req *ogen.HumanDrawin
 	}, nil
 }
 
-func (h *HaiHandler) AiDrawingGet(ctx context.Context) (ogen.AiDrawingGetRes, error) {
-	// AIの描画データを取得するロジック
-	return &ogen.AiDrawingGetOK{}, nil
-}
 func (h *HaiHandler) SavedURLPost(ctx context.Context, req *ogen.SavedURLPostReq) (ogen.SavedURLPostRes, error) {
 	// 描画URLを保存するロジック
 	return &ogen.SavedURLPostOK{}, nil
