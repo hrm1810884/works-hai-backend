@@ -60,9 +60,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "ai-drawing"
+			case 'p': // Prefix: "presigned-urls"
 				origElem := elem
-				if l := len("ai-drawing"); len(elem) >= l && elem[0:l] == "ai-drawing" {
+				if l := len("presigned-urls"); len(elem) >= l && elem[0:l] == "presigned-urls" {
 					elem = elem[l:]
 				} else {
 					break
@@ -72,7 +72,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					// Leaf node.
 					switch r.Method {
 					case "GET":
-						s.handleAiDrawingGetRequest([0]string{}, elemIsEscaped, w, r)
+						s.handlePresignedUrlsGetRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "GET")
 					}
@@ -81,9 +81,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
-			case 'h': // Prefix: "human-drawing"
+			case 'r': // Prefix: "resource-path"
 				origElem := elem
-				if l := len("human-drawing"); len(elem) >= l && elem[0:l] == "human-drawing" {
+				if l := len("resource-path"); len(elem) >= l && elem[0:l] == "resource-path" {
 					elem = elem[l:]
 				} else {
 					break
@@ -93,51 +93,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					// Leaf node.
 					switch r.Method {
 					case "POST":
-						s.handleHumanDrawingPostRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleResourcePathPostRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "POST")
-					}
-
-					return
-				}
-
-				elem = origElem
-			case 's': // Prefix: "saved-url"
-				origElem := elem
-				if l := len("saved-url"); len(elem) >= l && elem[0:l] == "saved-url" {
-					elem = elem[l:]
-				} else {
-					break
-				}
-
-				if len(elem) == 0 {
-					// Leaf node.
-					switch r.Method {
-					case "POST":
-						s.handleSavedURLPostRequest([0]string{}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, "POST")
-					}
-
-					return
-				}
-
-				elem = origElem
-			case 'u': // Prefix: "upload-url"
-				origElem := elem
-				if l := len("upload-url"); len(elem) >= l && elem[0:l] == "upload-url" {
-					elem = elem[l:]
-				} else {
-					break
-				}
-
-				if len(elem) == 0 {
-					// Leaf node.
-					switch r.Method {
-					case "GET":
-						s.handleUploadURLGetRequest([0]string{}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, "GET")
 					}
 
 					return
@@ -239,9 +197,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "ai-drawing"
+			case 'p': // Prefix: "presigned-urls"
 				origElem := elem
-				if l := len("ai-drawing"); len(elem) >= l && elem[0:l] == "ai-drawing" {
+				if l := len("presigned-urls"); len(elem) >= l && elem[0:l] == "presigned-urls" {
 					elem = elem[l:]
 				} else {
 					break
@@ -251,10 +209,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					// Leaf node.
 					switch method {
 					case "GET":
-						r.name = "AiDrawingGet"
-						r.summary = "Get 4 surrounding AI-drawings"
+						r.name = "PresignedUrlsGet"
+						r.summary = "Get presigned urls"
 						r.operationID = ""
-						r.pathPattern = "/ai-drawing"
+						r.pathPattern = "/presigned-urls"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -264,9 +222,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 
 				elem = origElem
-			case 'h': // Prefix: "human-drawing"
+			case 'r': // Prefix: "resource-path"
 				origElem := elem
-				if l := len("human-drawing"); len(elem) >= l && elem[0:l] == "human-drawing" {
+				if l := len("resource-path"); len(elem) >= l && elem[0:l] == "resource-path" {
 					elem = elem[l:]
 				} else {
 					break
@@ -276,60 +234,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					// Leaf node.
 					switch method {
 					case "POST":
-						r.name = "HumanDrawingPost"
-						r.summary = "Upload human drawing"
+						r.name = "ResourcePathPost"
+						r.summary = "Resource path in storage"
 						r.operationID = ""
-						r.pathPattern = "/human-drawing"
-						r.args = args
-						r.count = 0
-						return r, true
-					default:
-						return
-					}
-				}
-
-				elem = origElem
-			case 's': // Prefix: "saved-url"
-				origElem := elem
-				if l := len("saved-url"); len(elem) >= l && elem[0:l] == "saved-url" {
-					elem = elem[l:]
-				} else {
-					break
-				}
-
-				if len(elem) == 0 {
-					// Leaf node.
-					switch method {
-					case "POST":
-						r.name = "SavedURLPost"
-						r.summary = "Save drawing URL"
-						r.operationID = ""
-						r.pathPattern = "/saved-url"
-						r.args = args
-						r.count = 0
-						return r, true
-					default:
-						return
-					}
-				}
-
-				elem = origElem
-			case 'u': // Prefix: "upload-url"
-				origElem := elem
-				if l := len("upload-url"); len(elem) >= l && elem[0:l] == "upload-url" {
-					elem = elem[l:]
-				} else {
-					break
-				}
-
-				if len(elem) == 0 {
-					// Leaf node.
-					switch method {
-					case "GET":
-						r.name = "UploadURLGet"
-						r.summary = "Get presigned URLs for surrounding drawings"
-						r.operationID = ""
-						r.pathPattern = "/upload-url"
+						r.pathPattern = "/resource-path"
 						r.args = args
 						r.count = 0
 						return r, true

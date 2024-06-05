@@ -8,30 +8,22 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// AiDrawingGet implements GET /ai-drawing operation.
+	// PresignedUrlsGet implements GET /presigned-urls operation.
 	//
-	// Retrieve surrounding drawings only for dev mode.
+	// Retrieve presigned URLs for both Human and AI drawings.
 	//
-	// GET /ai-drawing
-	AiDrawingGet(ctx context.Context) (AiDrawingGetRes, error)
-	// HumanDrawingPost implements POST /human-drawing operation.
+	// GET /presigned-urls
+	PresignedUrlsGet(ctx context.Context) (PresignedUrlsGetRes, error)
+	// ResourcePathPost implements POST /resource-path operation.
 	//
-	// Upload human drawing using the presigned URL obtained from /upload-url.
+	// Post the resource path in storage to BE.
 	//
-	// POST /human-drawing
-	HumanDrawingPost(ctx context.Context, req *HumanDrawingPostReq) (HumanDrawingPostRes, error)
-	// SavedURLPost implements POST /saved-url operation.
+	// POST /resource-path
+	ResourcePathPost(ctx context.Context, req *ResourcePathPostReq) (ResourcePathPostRes, error)
+	// NewError creates *ErrRespStatusCode from error returned by handler.
 	//
-	// Save drawing URL in storage to BE.
-	//
-	// POST /saved-url
-	SavedURLPost(ctx context.Context, req *SavedURLPostReq) (SavedURLPostRes, error)
-	// UploadURLGet implements GET /upload-url operation.
-	//
-	// Retrieve presigned URLs for downloading surrounding drawings from cloud storage.
-	//
-	// GET /upload-url
-	UploadURLGet(ctx context.Context) (UploadURLGetRes, error)
+	// Used for common default response.
+	NewError(ctx context.Context, err error) *ErrRespStatusCode
 }
 
 // Server implements http server based on OpenAPI v3 specification and

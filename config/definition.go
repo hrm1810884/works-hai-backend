@@ -10,11 +10,17 @@ import (
 
 // マッピング用の構造体
 type Config struct {
-	Server Server `yaml:"server"`
+	Server   Server   `yaml:"server"`
+	Firebase Firebase `yaml:"firbase"`
 }
 
 type Server struct {
 	Dev string `yaml:"dev"`
+	Api string `yaml:"api"`
+}
+
+type Firebase struct {
+	Bucket string `yaml:"bucket"`
 }
 
 func Load() (*Config, error) {

@@ -22,30 +22,18 @@ import (
 
 // Invoker invokes operations described by OpenAPI v3 specification.
 type Invoker interface {
-	// AiDrawingGet invokes GET /ai-drawing operation.
+	// PresignedUrlsGet invokes GET /presigned-urls operation.
 	//
-	// Retrieve surrounding drawings only for dev mode.
+	// Retrieve presigned URLs for both Human and AI drawings.
 	//
-	// GET /ai-drawing
-	AiDrawingGet(ctx context.Context) (AiDrawingGetRes, error)
-	// HumanDrawingPost invokes POST /human-drawing operation.
+	// GET /presigned-urls
+	PresignedUrlsGet(ctx context.Context) (PresignedUrlsGetRes, error)
+	// ResourcePathPost invokes POST /resource-path operation.
 	//
-	// Upload human drawing using the presigned URL obtained from /upload-url.
+	// Post the resource path in storage to BE.
 	//
-	// POST /human-drawing
-	HumanDrawingPost(ctx context.Context, request *HumanDrawingPostReq) (HumanDrawingPostRes, error)
-	// SavedURLPost invokes POST /saved-url operation.
-	//
-	// Save drawing URL in storage to BE.
-	//
-	// POST /saved-url
-	SavedURLPost(ctx context.Context, request *SavedURLPostReq) (SavedURLPostRes, error)
-	// UploadURLGet invokes GET /upload-url operation.
-	//
-	// Retrieve presigned URLs for downloading surrounding drawings from cloud storage.
-	//
-	// GET /upload-url
-	UploadURLGet(ctx context.Context) (UploadURLGetRes, error)
+	// POST /resource-path
+	ResourcePathPost(ctx context.Context, request *ResourcePathPostReq) (ResourcePathPostRes, error)
 }
 
 // Client implements OAS client.
@@ -54,8 +42,12 @@ type Client struct {
 	sec       SecuritySource
 	baseClient
 }
+type errorHandler interface {
+	NewError(ctx context.Context, err error) *ErrRespStatusCode
+}
 
 var _ Handler = struct {
+	errorHandler
 	*Client
 }{}
 
@@ -98,20 +90,20 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 	return u
 }
 
-// AiDrawingGet invokes GET /ai-drawing operation.
+// PresignedUrlsGet invokes GET /presigned-urls operation.
 //
-// Retrieve surrounding drawings only for dev mode.
+// Retrieve presigned URLs for both Human and AI drawings.
 //
-// GET /ai-drawing
-func (c *Client) AiDrawingGet(ctx context.Context) (AiDrawingGetRes, error) {
-	res, err := c.sendAiDrawingGet(ctx)
+// GET /presigned-urls
+func (c *Client) PresignedUrlsGet(ctx context.Context) (PresignedUrlsGetRes, error) {
+	res, err := c.sendPresignedUrlsGet(ctx)
 	return res, err
 }
 
-func (c *Client) sendAiDrawingGet(ctx context.Context) (res AiDrawingGetRes, err error) {
+func (c *Client) sendPresignedUrlsGet(ctx context.Context) (res PresignedUrlsGetRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/ai-drawing"),
+		semconv.HTTPRouteKey.String("/presigned-urls"),
 	}
 
 	// Run stopwatch.
@@ -126,7 +118,7 @@ func (c *Client) sendAiDrawingGet(ctx context.Context) (res AiDrawingGetRes, err
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "AiDrawingGet",
+	ctx, span := c.cfg.Tracer.Start(ctx, "PresignedUrlsGet",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -144,7 +136,7 @@ func (c *Client) sendAiDrawingGet(ctx context.Context) (res AiDrawingGetRes, err
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/ai-drawing"
+	pathParts[0] = "/presigned-urls"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -158,7 +150,7 @@ func (c *Client) sendAiDrawingGet(ctx context.Context) (res AiDrawingGetRes, err
 		var satisfied bitset
 		{
 			stage = "Security:ApiKeyAuth"
-			switch err := c.securityApiKeyAuth(ctx, "AiDrawingGet", r); {
+			switch err := c.securityApiKeyAuth(ctx, "PresignedUrlsGet", r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -194,7 +186,7 @@ func (c *Client) sendAiDrawingGet(ctx context.Context) (res AiDrawingGetRes, err
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeAiDrawingGetResponse(resp)
+	result, err := decodePresignedUrlsGetResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -202,20 +194,20 @@ func (c *Client) sendAiDrawingGet(ctx context.Context) (res AiDrawingGetRes, err
 	return result, nil
 }
 
-// HumanDrawingPost invokes POST /human-drawing operation.
+// ResourcePathPost invokes POST /resource-path operation.
 //
-// Upload human drawing using the presigned URL obtained from /upload-url.
+// Post the resource path in storage to BE.
 //
-// POST /human-drawing
-func (c *Client) HumanDrawingPost(ctx context.Context, request *HumanDrawingPostReq) (HumanDrawingPostRes, error) {
-	res, err := c.sendHumanDrawingPost(ctx, request)
+// POST /resource-path
+func (c *Client) ResourcePathPost(ctx context.Context, request *ResourcePathPostReq) (ResourcePathPostRes, error) {
+	res, err := c.sendResourcePathPost(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendHumanDrawingPost(ctx context.Context, request *HumanDrawingPostReq) (res HumanDrawingPostRes, err error) {
+func (c *Client) sendResourcePathPost(ctx context.Context, request *ResourcePathPostReq) (res ResourcePathPostRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/human-drawing"),
+		semconv.HTTPRouteKey.String("/resource-path"),
 	}
 
 	// Run stopwatch.
@@ -230,7 +222,7 @@ func (c *Client) sendHumanDrawingPost(ctx context.Context, request *HumanDrawing
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "HumanDrawingPost",
+	ctx, span := c.cfg.Tracer.Start(ctx, "ResourcePathPost",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -248,7 +240,7 @@ func (c *Client) sendHumanDrawingPost(ctx context.Context, request *HumanDrawing
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/human-drawing"
+	pathParts[0] = "/resource-path"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -256,7 +248,7 @@ func (c *Client) sendHumanDrawingPost(ctx context.Context, request *HumanDrawing
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
 	}
-	if err := encodeHumanDrawingPostRequest(request, r); err != nil {
+	if err := encodeResourcePathPostRequest(request, r); err != nil {
 		return res, errors.Wrap(err, "encode request")
 	}
 
@@ -265,7 +257,7 @@ func (c *Client) sendHumanDrawingPost(ctx context.Context, request *HumanDrawing
 		var satisfied bitset
 		{
 			stage = "Security:ApiKeyAuth"
-			switch err := c.securityApiKeyAuth(ctx, "HumanDrawingPost", r); {
+			switch err := c.securityApiKeyAuth(ctx, "ResourcePathPost", r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -301,218 +293,7 @@ func (c *Client) sendHumanDrawingPost(ctx context.Context, request *HumanDrawing
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeHumanDrawingPostResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// SavedURLPost invokes POST /saved-url operation.
-//
-// Save drawing URL in storage to BE.
-//
-// POST /saved-url
-func (c *Client) SavedURLPost(ctx context.Context, request *SavedURLPostReq) (SavedURLPostRes, error) {
-	res, err := c.sendSavedURLPost(ctx, request)
-	return res, err
-}
-
-func (c *Client) sendSavedURLPost(ctx context.Context, request *SavedURLPostReq) (res SavedURLPostRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/saved-url"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "SavedURLPost",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [1]string
-	pathParts[0] = "/saved-url"
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "POST", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-	if err := encodeSavedURLPostRequest(request, r); err != nil {
-		return res, errors.Wrap(err, "encode request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:ApiKeyAuth"
-			switch err := c.securityApiKeyAuth(ctx, "SavedURLPost", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"ApiKeyAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeSavedURLPostResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// UploadURLGet invokes GET /upload-url operation.
-//
-// Retrieve presigned URLs for downloading surrounding drawings from cloud storage.
-//
-// GET /upload-url
-func (c *Client) UploadURLGet(ctx context.Context) (UploadURLGetRes, error) {
-	res, err := c.sendUploadURLGet(ctx)
-	return res, err
-}
-
-func (c *Client) sendUploadURLGet(ctx context.Context) (res UploadURLGetRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/upload-url"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "UploadURLGet",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [1]string
-	pathParts[0] = "/upload-url"
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:ApiKeyAuth"
-			switch err := c.securityApiKeyAuth(ctx, "UploadURLGet", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"ApiKeyAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeUploadURLGetResponse(resp)
+	result, err := decodeResourcePathPostResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

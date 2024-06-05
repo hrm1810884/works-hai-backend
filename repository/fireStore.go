@@ -23,7 +23,7 @@ func NewFirebaseStorage(ctx context.Context, app *firebase.App) (*FirebaseStorag
 	return &FirebaseStorage{Client: client}, nil
 }
 
-func (tfs *FirebaseStorage) generateSignedURL(bucketName, objectName string, expiry time.Duration) (string, error) {
+func (tfs *FirebaseStorage) GenerateSignedURL(bucketName, objectName string, expiry time.Duration) (string, error) {
 	// 署名付きURLのオプションを設定
 	opts := &cs.SignedURLOptions{
 		Scheme:  cs.SigningSchemeV4,
@@ -41,7 +41,6 @@ func (tfs *FirebaseStorage) generateSignedURL(bucketName, objectName string, exp
 	if err != nil {
 		return "", fmt.Errorf("Bucket(%q).SignedURL: %w", bucketName, err)
 	}
-	fmt.Printf("Generated GET signed URL:\n%s\n", u)
 
 	return u, nil
 }
