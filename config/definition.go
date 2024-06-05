@@ -18,9 +18,9 @@ type Server struct {
 }
 
 func Load() (*Config, error) {
-	viper.SetConfigName("config")  // 設定ファイル名を指定
-	viper.SetConfigType("yaml")    // 設定ファイルの形式を指定
-	viper.AddConfigPath("config/") // ファイルのpathを指定
+	viper.SetConfigName("config")          // 設定ファイル名を指定
+	viper.SetConfigType("yaml")            // 設定ファイルの形式を指定
+	viper.AddConfigPath("config/private/") // ファイルのpathを指定
 
 	err := viper.ReadInConfig() // 設定ファイルを探索して読み取る
 	if err != nil {
