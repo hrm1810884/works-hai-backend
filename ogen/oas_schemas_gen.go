@@ -127,63 +127,17 @@ func (*HumanDrawingPostOK) humanDrawingPostRes() {}
 
 type HumanDrawingPostReq struct {
 	// The image file to upload.
-	Image OptMultipartFile `json:"image"`
+	Image ht.MultipartFile `json:"image"`
 }
 
 // GetImage returns the value of Image.
-func (s *HumanDrawingPostReq) GetImage() OptMultipartFile {
+func (s *HumanDrawingPostReq) GetImage() ht.MultipartFile {
 	return s.Image
 }
 
 // SetImage sets the value of Image.
-func (s *HumanDrawingPostReq) SetImage(val OptMultipartFile) {
+func (s *HumanDrawingPostReq) SetImage(val ht.MultipartFile) {
 	s.Image = val
-}
-
-// NewOptMultipartFile returns new OptMultipartFile with value set to v.
-func NewOptMultipartFile(v ht.MultipartFile) OptMultipartFile {
-	return OptMultipartFile{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptMultipartFile is optional ht.MultipartFile.
-type OptMultipartFile struct {
-	Value ht.MultipartFile
-	Set   bool
-}
-
-// IsSet returns true if OptMultipartFile was set.
-func (o OptMultipartFile) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptMultipartFile) Reset() {
-	var v ht.MultipartFile
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptMultipartFile) SetTo(v ht.MultipartFile) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptMultipartFile) Get() (v ht.MultipartFile, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptMultipartFile) Or(d ht.MultipartFile) ht.MultipartFile {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
 }
 
 // NewOptString returns new OptString with value set to v.
