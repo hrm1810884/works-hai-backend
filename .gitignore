@@ -34,4 +34,5 @@ Temporary Items
 .apdisk
 
 # dev
-uploads/*
+uploads
+config/private

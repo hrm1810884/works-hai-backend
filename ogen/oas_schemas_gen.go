@@ -3,80 +3,11 @@
 package ogen
 
 import (
-	ht "github.com/ogen-go/ogen/http"
+	"fmt"
 )
 
-// AiDrawingGetBadRequest is response for AiDrawingGet operation.
-type AiDrawingGetBadRequest struct{}
-
-func (*AiDrawingGetBadRequest) aiDrawingGetRes() {}
-
-// AiDrawingGetInternalServerError is response for AiDrawingGet operation.
-type AiDrawingGetInternalServerError struct{}
-
-func (*AiDrawingGetInternalServerError) aiDrawingGetRes() {}
-
-type AiDrawingGetOK struct {
-	Result AiDrawingGetOKResult `json:"result"`
-}
-
-// GetResult returns the value of Result.
-func (s *AiDrawingGetOK) GetResult() AiDrawingGetOKResult {
-	return s.Result
-}
-
-// SetResult sets the value of Result.
-func (s *AiDrawingGetOK) SetResult(val AiDrawingGetOKResult) {
-	s.Result = val
-}
-
-func (*AiDrawingGetOK) aiDrawingGetRes() {}
-
-type AiDrawingGetOKResult struct {
-	TopDrawing    OptString `json:"topDrawing"`
-	RightDrawing  OptString `json:"rightDrawing"`
-	BottomDrawing OptString `json:"bottomDrawing"`
-	LeftDrawing   OptString `json:"leftDrawing"`
-}
-
-// GetTopDrawing returns the value of TopDrawing.
-func (s *AiDrawingGetOKResult) GetTopDrawing() OptString {
-	return s.TopDrawing
-}
-
-// GetRightDrawing returns the value of RightDrawing.
-func (s *AiDrawingGetOKResult) GetRightDrawing() OptString {
-	return s.RightDrawing
-}
-
-// GetBottomDrawing returns the value of BottomDrawing.
-func (s *AiDrawingGetOKResult) GetBottomDrawing() OptString {
-	return s.BottomDrawing
-}
-
-// GetLeftDrawing returns the value of LeftDrawing.
-func (s *AiDrawingGetOKResult) GetLeftDrawing() OptString {
-	return s.LeftDrawing
-}
-
-// SetTopDrawing sets the value of TopDrawing.
-func (s *AiDrawingGetOKResult) SetTopDrawing(val OptString) {
-	s.TopDrawing = val
-}
-
-// SetRightDrawing sets the value of RightDrawing.
-func (s *AiDrawingGetOKResult) SetRightDrawing(val OptString) {
-	s.RightDrawing = val
-}
-
-// SetBottomDrawing sets the value of BottomDrawing.
-func (s *AiDrawingGetOKResult) SetBottomDrawing(val OptString) {
-	s.BottomDrawing = val
-}
-
-// SetLeftDrawing sets the value of LeftDrawing.
-func (s *AiDrawingGetOKResult) SetLeftDrawing(val OptString) {
-	s.LeftDrawing = val
+func (s *ErrRespStatusCode) Error() string {
+	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
 type ApiKeyAuth struct {
@@ -93,51 +24,91 @@ func (s *ApiKeyAuth) SetAPIKey(val string) {
 	s.APIKey = val
 }
 
-type HumanDrawingPostBadRequest struct {
+type ErrResp struct {
+	// A detailed error message.
 	Error OptString `json:"error"`
 }
 
 // GetError returns the value of Error.
-func (s *HumanDrawingPostBadRequest) GetError() OptString {
+func (s *ErrResp) GetError() OptString {
 	return s.Error
 }
 
 // SetError sets the value of Error.
-func (s *HumanDrawingPostBadRequest) SetError(val OptString) {
+func (s *ErrResp) SetError(val OptString) {
 	s.Error = val
 }
 
-func (*HumanDrawingPostBadRequest) humanDrawingPostRes() {}
-
-type HumanDrawingPostOK struct {
-	Message OptString `json:"message"`
+// ErrRespStatusCode wraps ErrResp with StatusCode.
+type ErrRespStatusCode struct {
+	StatusCode int
+	Response   ErrResp
 }
 
-// GetMessage returns the value of Message.
-func (s *HumanDrawingPostOK) GetMessage() OptString {
-	return s.Message
+// GetStatusCode returns the value of StatusCode.
+func (s *ErrRespStatusCode) GetStatusCode() int {
+	return s.StatusCode
 }
 
-// SetMessage sets the value of Message.
-func (s *HumanDrawingPostOK) SetMessage(val OptString) {
-	s.Message = val
+// GetResponse returns the value of Response.
+func (s *ErrRespStatusCode) GetResponse() ErrResp {
+	return s.Response
 }
 
-func (*HumanDrawingPostOK) humanDrawingPostRes() {}
-
-type HumanDrawingPostReq struct {
-	// The image file to upload.
-	Image ht.MultipartFile `json:"image"`
+// SetStatusCode sets the value of StatusCode.
+func (s *ErrRespStatusCode) SetStatusCode(val int) {
+	s.StatusCode = val
 }
 
-// GetImage returns the value of Image.
-func (s *HumanDrawingPostReq) GetImage() ht.MultipartFile {
-	return s.Image
+// SetResponse sets the value of Response.
+func (s *ErrRespStatusCode) SetResponse(val ErrResp) {
+	s.Response = val
 }
 
-// SetImage sets the value of Image.
-func (s *HumanDrawingPostReq) SetImage(val ht.MultipartFile) {
-	s.Image = val
+// NewOptPresignedUrlsGetOKResult returns new OptPresignedUrlsGetOKResult with value set to v.
+func NewOptPresignedUrlsGetOKResult(v PresignedUrlsGetOKResult) OptPresignedUrlsGetOKResult {
+	return OptPresignedUrlsGetOKResult{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptPresignedUrlsGetOKResult is optional PresignedUrlsGetOKResult.
+type OptPresignedUrlsGetOKResult struct {
+	Value PresignedUrlsGetOKResult
+	Set   bool
+}
+
+// IsSet returns true if OptPresignedUrlsGetOKResult was set.
+func (o OptPresignedUrlsGetOKResult) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptPresignedUrlsGetOKResult) Reset() {
+	var v PresignedUrlsGetOKResult
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptPresignedUrlsGetOKResult) SetTo(v PresignedUrlsGetOKResult) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptPresignedUrlsGetOKResult) Get() (v PresignedUrlsGetOKResult, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptPresignedUrlsGetOKResult) Or(d PresignedUrlsGetOKResult) PresignedUrlsGetOKResult {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
 }
 
 // NewOptString returns new OptString with value set to v.
@@ -186,81 +157,134 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
-type SavedURLPostBadRequest struct {
+// PresignedUrlsGetBadRequest is response for PresignedUrlsGet operation.
+type PresignedUrlsGetBadRequest struct{}
+
+func (*PresignedUrlsGetBadRequest) presignedUrlsGetRes() {}
+
+// PresignedUrlsGetInternalServerError is response for PresignedUrlsGet operation.
+type PresignedUrlsGetInternalServerError struct{}
+
+func (*PresignedUrlsGetInternalServerError) presignedUrlsGetRes() {}
+
+type PresignedUrlsGetOK struct {
+	Result OptPresignedUrlsGetOKResult `json:"result"`
+}
+
+// GetResult returns the value of Result.
+func (s *PresignedUrlsGetOK) GetResult() OptPresignedUrlsGetOKResult {
+	return s.Result
+}
+
+// SetResult sets the value of Result.
+func (s *PresignedUrlsGetOK) SetResult(val OptPresignedUrlsGetOKResult) {
+	s.Result = val
+}
+
+func (*PresignedUrlsGetOK) presignedUrlsGetRes() {}
+
+type PresignedUrlsGetOKResult struct {
+	// Presigned URL for human drawing upload.
+	HumanDrawing  OptString `json:"humanDrawing"`
+	TopDrawing    OptString `json:"topDrawing"`
+	RightDrawing  OptString `json:"rightDrawing"`
+	BottomDrawing OptString `json:"bottomDrawing"`
+	LeftDrawing   OptString `json:"leftDrawing"`
+}
+
+// GetHumanDrawing returns the value of HumanDrawing.
+func (s *PresignedUrlsGetOKResult) GetHumanDrawing() OptString {
+	return s.HumanDrawing
+}
+
+// GetTopDrawing returns the value of TopDrawing.
+func (s *PresignedUrlsGetOKResult) GetTopDrawing() OptString {
+	return s.TopDrawing
+}
+
+// GetRightDrawing returns the value of RightDrawing.
+func (s *PresignedUrlsGetOKResult) GetRightDrawing() OptString {
+	return s.RightDrawing
+}
+
+// GetBottomDrawing returns the value of BottomDrawing.
+func (s *PresignedUrlsGetOKResult) GetBottomDrawing() OptString {
+	return s.BottomDrawing
+}
+
+// GetLeftDrawing returns the value of LeftDrawing.
+func (s *PresignedUrlsGetOKResult) GetLeftDrawing() OptString {
+	return s.LeftDrawing
+}
+
+// SetHumanDrawing sets the value of HumanDrawing.
+func (s *PresignedUrlsGetOKResult) SetHumanDrawing(val OptString) {
+	s.HumanDrawing = val
+}
+
+// SetTopDrawing sets the value of TopDrawing.
+func (s *PresignedUrlsGetOKResult) SetTopDrawing(val OptString) {
+	s.TopDrawing = val
+}
+
+// SetRightDrawing sets the value of RightDrawing.
+func (s *PresignedUrlsGetOKResult) SetRightDrawing(val OptString) {
+	s.RightDrawing = val
+}
+
+// SetBottomDrawing sets the value of BottomDrawing.
+func (s *PresignedUrlsGetOKResult) SetBottomDrawing(val OptString) {
+	s.BottomDrawing = val
+}
+
+// SetLeftDrawing sets the value of LeftDrawing.
+func (s *PresignedUrlsGetOKResult) SetLeftDrawing(val OptString) {
+	s.LeftDrawing = val
+}
+
+type ResourcePathPostBadRequest struct {
 	Error OptString `json:"error"`
 }
 
 // GetError returns the value of Error.
-func (s *SavedURLPostBadRequest) GetError() OptString {
+func (s *ResourcePathPostBadRequest) GetError() OptString {
 	return s.Error
 }
 
 // SetError sets the value of Error.
-func (s *SavedURLPostBadRequest) SetError(val OptString) {
+func (s *ResourcePathPostBadRequest) SetError(val OptString) {
 	s.Error = val
 }
 
-func (*SavedURLPostBadRequest) savedURLPostRes() {}
+func (*ResourcePathPostBadRequest) resourcePathPostRes() {}
 
-type SavedURLPostOK struct {
+type ResourcePathPostOK struct {
 	Message OptString `json:"message"`
 }
 
 // GetMessage returns the value of Message.
-func (s *SavedURLPostOK) GetMessage() OptString {
+func (s *ResourcePathPostOK) GetMessage() OptString {
 	return s.Message
 }
 
 // SetMessage sets the value of Message.
-func (s *SavedURLPostOK) SetMessage(val OptString) {
+func (s *ResourcePathPostOK) SetMessage(val OptString) {
 	s.Message = val
 }
 
-func (*SavedURLPostOK) savedURLPostRes() {}
+func (*ResourcePathPostOK) resourcePathPostRes() {}
 
-type SavedURLPostReq struct {
-	// The image file to upload.
+type ResourcePathPostReq struct {
+	// The resource path in storage.
 	Image OptString `json:"image"`
 }
 
 // GetImage returns the value of Image.
-func (s *SavedURLPostReq) GetImage() OptString {
+func (s *ResourcePathPostReq) GetImage() OptString {
 	return s.Image
 }
 
 // SetImage sets the value of Image.
-func (s *SavedURLPostReq) SetImage(val OptString) {
+func (s *ResourcePathPostReq) SetImage(val OptString) {
 	s.Image = val
 }
-
-type UploadURLGetBadRequest struct {
-	Error OptString `json:"error"`
-}
-
-// GetError returns the value of Error.
-func (s *UploadURLGetBadRequest) GetError() OptString {
-	return s.Error
-}
-
-// SetError sets the value of Error.
-func (s *UploadURLGetBadRequest) SetError(val OptString) {
-	s.Error = val
-}
-
-func (*UploadURLGetBadRequest) uploadURLGetRes() {}
-
-type UploadURLGetOK struct {
-	PresignedURL OptString `json:"presigned_url"`
-}
-
-// GetPresignedURL returns the value of PresignedURL.
-func (s *UploadURLGetOK) GetPresignedURL() OptString {
-	return s.PresignedURL
-}
-
-// SetPresignedURL sets the value of PresignedURL.
-func (s *UploadURLGetOK) SetPresignedURL(val OptString) {
-	s.PresignedURL = val
-}
-
-func (*UploadURLGetOK) uploadURLGetRes() {}

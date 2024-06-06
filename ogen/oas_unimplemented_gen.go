@@ -13,38 +13,28 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// AiDrawingGet implements GET /ai-drawing operation.
+// PresignedUrlsGet implements GET /presigned-urls operation.
 //
-// Retrieve surrounding drawings only for dev mode.
+// Retrieve presigned URLs for both Human and AI drawings.
 //
-// GET /ai-drawing
-func (UnimplementedHandler) AiDrawingGet(ctx context.Context) (r AiDrawingGetRes, _ error) {
+// GET /presigned-urls
+func (UnimplementedHandler) PresignedUrlsGet(ctx context.Context) (r PresignedUrlsGetRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// HumanDrawingPost implements POST /human-drawing operation.
+// ResourcePathPost implements POST /resource-path operation.
 //
-// Upload human drawing using the presigned URL obtained from /upload-url.
+// Post the resource path in storage to BE.
 //
-// POST /human-drawing
-func (UnimplementedHandler) HumanDrawingPost(ctx context.Context, req *HumanDrawingPostReq) (r HumanDrawingPostRes, _ error) {
+// POST /resource-path
+func (UnimplementedHandler) ResourcePathPost(ctx context.Context, req *ResourcePathPostReq) (r ResourcePathPostRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// SavedURLPost implements POST /saved-url operation.
+// NewError creates *ErrRespStatusCode from error returned by handler.
 //
-// Save drawing URL in storage to BE.
-//
-// POST /saved-url
-func (UnimplementedHandler) SavedURLPost(ctx context.Context, req *SavedURLPostReq) (r SavedURLPostRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// UploadURLGet implements GET /upload-url operation.
-//
-// Retrieve presigned URLs for downloading surrounding drawings from cloud storage.
-//
-// GET /upload-url
-func (UnimplementedHandler) UploadURLGet(ctx context.Context) (r UploadURLGetRes, _ error) {
-	return r, ht.ErrNotImplemented
+// Used for common default response.
+func (UnimplementedHandler) NewError(ctx context.Context, err error) (r *ErrRespStatusCode) {
+	r = new(ErrRespStatusCode)
+	return r
 }
