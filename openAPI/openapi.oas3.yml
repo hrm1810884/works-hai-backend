@@ -20,9 +20,15 @@ paths:
                         schema:
                             type: object
                             properties:
-                                image:
+                                presigned_url:
                                     type: string
-                                    description: The resource path in storage.
+                                    description: The presigned URL to be included in the request
+                                x:
+                                    type: integer
+                                    description: The x-coordinate
+                                y:
+                                    type: integer
+                                    description: The y-coordinate
             responses:
                 "200":
                     description: Drawing saved successfully.
