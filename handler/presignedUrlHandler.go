@@ -1,11 +1,11 @@
-package service
+package handler
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/hrm1810884/works-hai-backend/ogen"
-	"github.com/hrm1810884/works-hai-backend/service/usecase"
+	"github.com/hrm1810884/works-hai-backend/usecase"
 )
 
 func (h *HaiHandler) PresignedUrlsGet(ctx context.Context) (ogen.PresignedUrlsGetRes, error) {

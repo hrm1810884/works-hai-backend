@@ -17,7 +17,7 @@ type FirebaseStorage struct {
 func NewFirebaseStorage(ctx context.Context, app *firebase.App) (*FirebaseStorage, error) {
 	client, err := app.Storage(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to initialize Firebase Storage client: %w", err)
 	}
 
 	return &FirebaseStorage{Client: client}, nil
@@ -27,7 +27,7 @@ func (tfs *FirebaseStorage) GenerateSignedURL(bucketName, objectName string, exp
 	// 署名付きURLのオプションを設定
 	opts := &cs.SignedURLOptions{
 		Scheme:  cs.SigningSchemeV4,
-		Method:  "GET",
+		Method:  "PUT",
 		Expires: time.Now().Add(expiry * time.Minute), // 有効期限
 	}
 

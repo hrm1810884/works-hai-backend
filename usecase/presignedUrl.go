@@ -19,7 +19,7 @@ type FetchPresignedUrlsUsecase struct {
 func NewFetchPresignedUrlsUsecase(ctx context.Context) (IFetchPresignedUrls, error) {
 	firebaseApp, err := config.InitializeApp()
 	if err != nil {
-		panic(err) //FIXME: err handling 統一
+		return nil, fmt.Errorf("failed to initialize Firebase app: %w", err)
 	}
 
 	storageClient, err := repository.NewFirebaseStorage(ctx, firebaseApp)
@@ -39,7 +39,8 @@ func (u *FetchPresignedUrlsUsecase) FetchPresignedUrl() (map[string]string, erro
 	}
 
 	bucketName := cfg.Firebase.Bucket
-	presignedUrl, err := u.storageClient.GenerateSignedURL(bucketName, "hoge", 15)
+
+	presignedUrl, err := u.storageClient.GenerateSignedURL(bucketName, "hoge.png", 15)
 	if err != nil {
 		return nil, fmt.Errorf("error generating url: %w", err)
 	}

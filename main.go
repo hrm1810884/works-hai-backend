@@ -8,8 +8,8 @@ import (
 
 	"github.com/hrm1810884/works-hai-backend/auth"
 	"github.com/hrm1810884/works-hai-backend/config"
+	"github.com/hrm1810884/works-hai-backend/handler"
 	"github.com/hrm1810884/works-hai-backend/ogen"
-	"github.com/hrm1810884/works-hai-backend/service"
 )
 
 func enableCORS(next http.Handler) http.Handler {
@@ -33,7 +33,7 @@ func enableCORS(next http.Handler) http.Handler {
 func main() {
 	// サーバーの初期設定
 	hdl, err := ogen.NewServer(
-		&service.HaiHandler{},
+		&handler.HaiHandler{},
 		&auth.HaiSecurityHandler{},
 	)
 
