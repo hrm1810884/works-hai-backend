@@ -70,6 +70,41 @@ func (s *ErrResp) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes int as json.
+func (o OptInt) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Int(int(o.Value))
+}
+
+// Decode decodes int from json.
+func (o *OptInt) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptInt to nil")
+	}
+	o.Set = true
+	v, err := d.Int()
+	if err != nil {
+		return err
+	}
+	o.Value = int(v)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptInt) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptInt) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes PresignedUrlsGetOKResult as json.
 func (o OptPresignedUrlsGetOKResult) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -468,15 +503,29 @@ func (s *ResourcePathPostReq) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ResourcePathPostReq) encodeFields(e *jx.Encoder) {
 	{
-		if s.Image.Set {
-			e.FieldStart("image")
-			s.Image.Encode(e)
+		if s.PresignedURL.Set {
+			e.FieldStart("presigned_url")
+			s.PresignedURL.Encode(e)
+		}
+	}
+	{
+		if s.X.Set {
+			e.FieldStart("x")
+			s.X.Encode(e)
+		}
+	}
+	{
+		if s.Y.Set {
+			e.FieldStart("y")
+			s.Y.Encode(e)
 		}
 	}
 }
 
-var jsonFieldsNameOfResourcePathPostReq = [1]string{
-	0: "image",
+var jsonFieldsNameOfResourcePathPostReq = [3]string{
+	0: "presigned_url",
+	1: "x",
+	2: "y",
 }
 
 // Decode decodes ResourcePathPostReq from json.
@@ -487,15 +536,35 @@ func (s *ResourcePathPostReq) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "image":
+		case "presigned_url":
 			if err := func() error {
-				s.Image.Reset()
-				if err := s.Image.Decode(d); err != nil {
+				s.PresignedURL.Reset()
+				if err := s.PresignedURL.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"image\"")
+				return errors.Wrap(err, "decode field \"presigned_url\"")
+			}
+		case "x":
+			if err := func() error {
+				s.X.Reset()
+				if err := s.X.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"x\"")
+			}
+		case "y":
+			if err := func() error {
+				s.Y.Reset()
+				if err := s.Y.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"y\"")
 			}
 		default:
 			return d.Skip()
