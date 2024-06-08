@@ -14,7 +14,7 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func decodePresignedUrlsGetResponse(resp *http.Response) (res PresignedUrlsGetRes, _ error) {
+func decodeImageGenerationPostResponse(resp *http.Response) (res ImageGenerationPostRes, _ error) {
 	switch resp.StatusCode {
 	case 200:
 		// Code 200.
@@ -30,7 +30,7 @@ func decodePresignedUrlsGetResponse(resp *http.Response) (res PresignedUrlsGetRe
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response PresignedUrlsGetOK
+			var response ImageGenerationPostOK
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -53,10 +53,39 @@ func decodePresignedUrlsGetResponse(resp *http.Response) (res PresignedUrlsGetRe
 		}
 	case 400:
 		// Code 400.
-		return &PresignedUrlsGetBadRequest{}, nil
-	case 500:
-		// Code 500.
-		return &PresignedUrlsGetInternalServerError{}, nil
+		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+		if err != nil {
+			return res, errors.Wrap(err, "parse media type")
+		}
+		switch {
+		case ct == "application/json":
+			buf, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return res, err
+			}
+			d := jx.DecodeBytes(buf)
+
+			var response ImageGenerationPostBadRequest
+			if err := func() error {
+				if err := response.Decode(d); err != nil {
+					return err
+				}
+				if err := d.Skip(); err != io.EOF {
+					return errors.New("unexpected trailing data")
+				}
+				return nil
+			}(); err != nil {
+				err = &ogenerrors.DecodeBodyError{
+					ContentType: ct,
+					Body:        buf,
+					Err:         err,
+				}
+				return res, err
+			}
+			return &response, nil
+		default:
+			return res, validate.InvalidContentType(ct)
+		}
 	}
 	// Convenient error response.
 	defRes, err := func() (res *ErrRespStatusCode, err error) {
@@ -103,7 +132,7 @@ func decodePresignedUrlsGetResponse(resp *http.Response) (res PresignedUrlsGetRe
 	return res, errors.Wrap(defRes, "error")
 }
 
-func decodeResourcePathPostResponse(resp *http.Response) (res ResourcePathPostRes, _ error) {
+func decodePresignedUrlsGetResponse(resp *http.Response) (res PresignedUrlsGetRes, _ error) {
 	switch resp.StatusCode {
 	case 200:
 		// Code 200.
@@ -119,7 +148,7 @@ func decodeResourcePathPostResponse(resp *http.Response) (res ResourcePathPostRe
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response ResourcePathPostOK
+			var response PresignedUrlsGetOK
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -142,39 +171,10 @@ func decodeResourcePathPostResponse(resp *http.Response) (res ResourcePathPostRe
 		}
 	case 400:
 		// Code 400.
-		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
-		if err != nil {
-			return res, errors.Wrap(err, "parse media type")
-		}
-		switch {
-		case ct == "application/json":
-			buf, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return res, err
-			}
-			d := jx.DecodeBytes(buf)
-
-			var response ResourcePathPostBadRequest
-			if err := func() error {
-				if err := response.Decode(d); err != nil {
-					return err
-				}
-				if err := d.Skip(); err != io.EOF {
-					return errors.New("unexpected trailing data")
-				}
-				return nil
-			}(); err != nil {
-				err = &ogenerrors.DecodeBodyError{
-					ContentType: ct,
-					Body:        buf,
-					Err:         err,
-				}
-				return res, err
-			}
-			return &response, nil
-		default:
-			return res, validate.InvalidContentType(ct)
-		}
+		return &PresignedUrlsGetBadRequest{}, nil
+	case 500:
+		// Code 500.
+		return &PresignedUrlsGetInternalServerError{}, nil
 	}
 	// Convenient error response.
 	defRes, err := func() (res *ErrRespStatusCode, err error) {

@@ -7,7 +7,7 @@ servers:
     - url: https://frontend.example.com
       description: Frontend Server
 paths:
-    /resource-path:
+    /image-generation:
         post:
             summary: Resource path in storage
             description: Post the resource path in storage to BE.
@@ -20,15 +20,9 @@ paths:
                         schema:
                             type: object
                             properties:
-                                presigned_url:
-                                    type: string
-                                    description: The presigned URL to be included in the request
-                                x:
+                                position:
                                     type: integer
-                                    description: The x-coordinate
-                                y:
-                                    type: integer
-                                    description: The y-coordinate
+                                    description: The human drawing positon
             responses:
                 "200":
                     description: Drawing saved successfully.

@@ -15,8 +15,8 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func (s *Server) decodeResourcePathPostRequest(r *http.Request) (
-	req *ResourcePathPostReq,
+func (s *Server) decodeImageGenerationPostRequest(r *http.Request) (
+	req *ImageGenerationPostReq,
 	close func() error,
 	rerr error,
 ) {
@@ -55,7 +55,7 @@ func (s *Server) decodeResourcePathPostRequest(r *http.Request) (
 
 		d := jx.DecodeBytes(buf)
 
-		var request ResourcePathPostReq
+		var request ImageGenerationPostReq
 		if err := func() error {
 			if err := request.Decode(d); err != nil {
 				return err

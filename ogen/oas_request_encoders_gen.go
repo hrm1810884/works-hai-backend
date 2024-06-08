@@ -11,8 +11,8 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 )
 
-func encodeResourcePathPostRequest(
-	req *ResourcePathPostReq,
+func encodeImageGenerationPostRequest(
+	req *ImageGenerationPostReq,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"

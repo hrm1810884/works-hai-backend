@@ -60,6 +60,27 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
+			case 'i': // Prefix: "image-generation"
+				origElem := elem
+				if l := len("image-generation"); len(elem) >= l && elem[0:l] == "image-generation" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "POST":
+						s.handleImageGenerationPostRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "POST")
+					}
+
+					return
+				}
+
+				elem = origElem
 			case 'p': // Prefix: "presigned-urls"
 				origElem := elem
 				if l := len("presigned-urls"); len(elem) >= l && elem[0:l] == "presigned-urls" {
@@ -75,27 +96,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						s.handlePresignedUrlsGetRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "GET")
-					}
-
-					return
-				}
-
-				elem = origElem
-			case 'r': // Prefix: "resource-path"
-				origElem := elem
-				if l := len("resource-path"); len(elem) >= l && elem[0:l] == "resource-path" {
-					elem = elem[l:]
-				} else {
-					break
-				}
-
-				if len(elem) == 0 {
-					// Leaf node.
-					switch r.Method {
-					case "POST":
-						s.handleResourcePathPostRequest([0]string{}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, "POST")
 					}
 
 					return
@@ -197,6 +197,31 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
+			case 'i': // Prefix: "image-generation"
+				origElem := elem
+				if l := len("image-generation"); len(elem) >= l && elem[0:l] == "image-generation" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch method {
+					case "POST":
+						r.name = "ImageGenerationPost"
+						r.summary = "Resource path in storage"
+						r.operationID = ""
+						r.pathPattern = "/image-generation"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+
+				elem = origElem
 			case 'p': // Prefix: "presigned-urls"
 				origElem := elem
 				if l := len("presigned-urls"); len(elem) >= l && elem[0:l] == "presigned-urls" {
@@ -213,31 +238,6 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.summary = "Get presigned urls"
 						r.operationID = ""
 						r.pathPattern = "/presigned-urls"
-						r.args = args
-						r.count = 0
-						return r, true
-					default:
-						return
-					}
-				}
-
-				elem = origElem
-			case 'r': // Prefix: "resource-path"
-				origElem := elem
-				if l := len("resource-path"); len(elem) >= l && elem[0:l] == "resource-path" {
-					elem = elem[l:]
-				} else {
-					break
-				}
-
-				if len(elem) == 0 {
-					// Leaf node.
-					switch method {
-					case "POST":
-						r.name = "ResourcePathPost"
-						r.summary = "Resource path in storage"
-						r.operationID = ""
-						r.pathPattern = "/resource-path"
 						r.args = args
 						r.count = 0
 						return r, true

@@ -65,6 +65,53 @@ func (s *ErrRespStatusCode) SetResponse(val ErrResp) {
 	s.Response = val
 }
 
+type ImageGenerationPostBadRequest struct {
+	Error OptString `json:"error"`
+}
+
+// GetError returns the value of Error.
+func (s *ImageGenerationPostBadRequest) GetError() OptString {
+	return s.Error
+}
+
+// SetError sets the value of Error.
+func (s *ImageGenerationPostBadRequest) SetError(val OptString) {
+	s.Error = val
+}
+
+func (*ImageGenerationPostBadRequest) imageGenerationPostRes() {}
+
+type ImageGenerationPostOK struct {
+	Message OptString `json:"message"`
+}
+
+// GetMessage returns the value of Message.
+func (s *ImageGenerationPostOK) GetMessage() OptString {
+	return s.Message
+}
+
+// SetMessage sets the value of Message.
+func (s *ImageGenerationPostOK) SetMessage(val OptString) {
+	s.Message = val
+}
+
+func (*ImageGenerationPostOK) imageGenerationPostRes() {}
+
+type ImageGenerationPostReq struct {
+	// The human drawing positon.
+	Position OptInt `json:"position"`
+}
+
+// GetPosition returns the value of Position.
+func (s *ImageGenerationPostReq) GetPosition() OptInt {
+	return s.Position
+}
+
+// SetPosition sets the value of Position.
+func (s *ImageGenerationPostReq) SetPosition(val OptInt) {
+	s.Position = val
+}
+
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {
 	return OptInt{
@@ -240,75 +287,4 @@ func (s *PresignedUrlsGetOKResult) SetBottomDrawing(val OptString) {
 // SetLeftDrawing sets the value of LeftDrawing.
 func (s *PresignedUrlsGetOKResult) SetLeftDrawing(val OptString) {
 	s.LeftDrawing = val
-}
-
-type ResourcePathPostBadRequest struct {
-	Error OptString `json:"error"`
-}
-
-// GetError returns the value of Error.
-func (s *ResourcePathPostBadRequest) GetError() OptString {
-	return s.Error
-}
-
-// SetError sets the value of Error.
-func (s *ResourcePathPostBadRequest) SetError(val OptString) {
-	s.Error = val
-}
-
-func (*ResourcePathPostBadRequest) resourcePathPostRes() {}
-
-type ResourcePathPostOK struct {
-	Message OptString `json:"message"`
-}
-
-// GetMessage returns the value of Message.
-func (s *ResourcePathPostOK) GetMessage() OptString {
-	return s.Message
-}
-
-// SetMessage sets the value of Message.
-func (s *ResourcePathPostOK) SetMessage(val OptString) {
-	s.Message = val
-}
-
-func (*ResourcePathPostOK) resourcePathPostRes() {}
-
-type ResourcePathPostReq struct {
-	// The presigned URL to be included in the request.
-	PresignedURL OptString `json:"presigned_url"`
-	// The x-coordinate.
-	X OptInt `json:"x"`
-	// The y-coordinate.
-	Y OptInt `json:"y"`
-}
-
-// GetPresignedURL returns the value of PresignedURL.
-func (s *ResourcePathPostReq) GetPresignedURL() OptString {
-	return s.PresignedURL
-}
-
-// GetX returns the value of X.
-func (s *ResourcePathPostReq) GetX() OptInt {
-	return s.X
-}
-
-// GetY returns the value of Y.
-func (s *ResourcePathPostReq) GetY() OptInt {
-	return s.Y
-}
-
-// SetPresignedURL sets the value of PresignedURL.
-func (s *ResourcePathPostReq) SetPresignedURL(val OptString) {
-	s.PresignedURL = val
-}
-
-// SetX sets the value of X.
-func (s *ResourcePathPostReq) SetX(val OptInt) {
-	s.X = val
-}
-
-// SetY sets the value of Y.
-func (s *ResourcePathPostReq) SetY(val OptInt) {
-	s.Y = val
 }
