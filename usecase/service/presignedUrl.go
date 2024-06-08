@@ -1,0 +1,52 @@
+package service
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/hrm1810884/works-hai-backend/config"
+	"github.com/hrm1810884/works-hai-backend/repository"
+)
+
+type IFetchPresignedUrls interface {
+	FetchPresignedUrl(string) (map[string]string, error)
+}
+
+type FetchPresignedUrlsService struct {
+	storageClient *repository.FirebaseStorageRepository
+}
+
+func NewFetchPresignedUrlsService(ctx context.Context) (IFetchPresignedUrls, error) {
+	firebaseApp, err := config.InitializeApp()
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize Firebase app: %w", err)
+	}
+
+	storageClient, err := repository.NewFirebaseStorageRepository(ctx, firebaseApp)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize storage client: %w", err)
+	}
+
+	return &FetchPresignedUrlsService{
+		storageClient: storageClient,
+	}, nil
+}
+
+func (u *FetchPresignedUrlsService) FetchPresignedUrl(method string) (map[string]string, error) {
+	cfg, err := config.Load()
+	if err != nil {
+		return nil, fmt.Errorf("error loading config: %w", err)
+	}
+
+	bucketName := cfg.Firebase.Bucket
+
+	presignedUrl, err := u.storageClient.GenerateSignedURL(bucketName, "hoge.png", 15, method)
+	if err != nil {
+		return nil, fmt.Errorf("error generating url: %w", err)
+	}
+
+	fetchedPresignedUrls := make(map[string]string)
+	fetchedPresignedUrls["humanDrawing"] = presignedUrl
+
+	return fetchedPresignedUrls, nil
+}
