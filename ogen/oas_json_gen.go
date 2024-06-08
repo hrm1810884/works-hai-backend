@@ -3,8 +3,13 @@
 package ogen
 
 import (
+	"math/bits"
+	"strconv"
+
 	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
+
+	"github.com/ogen-go/ogen/validate"
 )
 
 // Encode implements json.Marshaler.
@@ -70,35 +75,37 @@ func (s *ErrResp) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes PresignedUrlsGetOKResult as json.
-func (o OptPresignedUrlsGetOKResult) Encode(e *jx.Encoder) {
+// Encode encodes int as json.
+func (o OptInt) Encode(e *jx.Encoder) {
 	if !o.Set {
 		return
 	}
-	o.Value.Encode(e)
+	e.Int(int(o.Value))
 }
 
-// Decode decodes PresignedUrlsGetOKResult from json.
-func (o *OptPresignedUrlsGetOKResult) Decode(d *jx.Decoder) error {
+// Decode decodes int from json.
+func (o *OptInt) Decode(d *jx.Decoder) error {
 	if o == nil {
-		return errors.New("invalid: unable to decode OptPresignedUrlsGetOKResult to nil")
+		return errors.New("invalid: unable to decode OptInt to nil")
 	}
 	o.Set = true
-	if err := o.Value.Decode(d); err != nil {
+	v, err := d.Int()
+	if err != nil {
 		return err
 	}
+	o.Value = int(v)
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s OptPresignedUrlsGetOKResult) MarshalJSON() ([]byte, error) {
+func (s OptInt) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptPresignedUrlsGetOKResult) UnmarshalJSON(data []byte) error {
+func (s *OptInt) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -148,10 +155,8 @@ func (s *PresignedUrlsGetOK) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *PresignedUrlsGetOK) encodeFields(e *jx.Encoder) {
 	{
-		if s.Result.Set {
-			e.FieldStart("result")
-			s.Result.Encode(e)
-		}
+		e.FieldStart("result")
+		s.Result.Encode(e)
 	}
 }
 
@@ -164,12 +169,13 @@ func (s *PresignedUrlsGetOK) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode PresignedUrlsGetOK to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "result":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.Result.Reset()
 				if err := s.Result.Decode(d); err != nil {
 					return err
 				}
@@ -183,6 +189,38 @@ func (s *PresignedUrlsGetOK) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode PresignedUrlsGetOK")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfPresignedUrlsGetOK) {
+					name = jsonFieldsNameOfPresignedUrlsGetOK[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -211,10 +249,8 @@ func (s *PresignedUrlsGetOKResult) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *PresignedUrlsGetOKResult) encodeFields(e *jx.Encoder) {
 	{
-		if s.HumanDrawing.Set {
-			e.FieldStart("humanDrawing")
-			s.HumanDrawing.Encode(e)
-		}
+		e.FieldStart("humanDrawing")
+		e.Str(s.HumanDrawing)
 	}
 	{
 		if s.TopDrawing.Set {
@@ -255,13 +291,16 @@ func (s *PresignedUrlsGetOKResult) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode PresignedUrlsGetOKResult to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "humanDrawing":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.HumanDrawing.Reset()
-				if err := s.HumanDrawing.Decode(d); err != nil {
+				v, err := d.Str()
+				s.HumanDrawing = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -314,6 +353,38 @@ func (s *PresignedUrlsGetOKResult) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode PresignedUrlsGetOKResult")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfPresignedUrlsGetOKResult) {
+					name = jsonFieldsNameOfPresignedUrlsGetOKResult[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -468,15 +539,29 @@ func (s *ResourcePathPostReq) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ResourcePathPostReq) encodeFields(e *jx.Encoder) {
 	{
-		if s.Image.Set {
-			e.FieldStart("image")
-			s.Image.Encode(e)
+		if s.PresignedURL.Set {
+			e.FieldStart("presigned_url")
+			s.PresignedURL.Encode(e)
+		}
+	}
+	{
+		if s.X.Set {
+			e.FieldStart("x")
+			s.X.Encode(e)
+		}
+	}
+	{
+		if s.Y.Set {
+			e.FieldStart("y")
+			s.Y.Encode(e)
 		}
 	}
 }
 
-var jsonFieldsNameOfResourcePathPostReq = [1]string{
-	0: "image",
+var jsonFieldsNameOfResourcePathPostReq = [3]string{
+	0: "presigned_url",
+	1: "x",
+	2: "y",
 }
 
 // Decode decodes ResourcePathPostReq from json.
@@ -487,15 +572,35 @@ func (s *ResourcePathPostReq) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "image":
+		case "presigned_url":
 			if err := func() error {
-				s.Image.Reset()
-				if err := s.Image.Decode(d); err != nil {
+				s.PresignedURL.Reset()
+				if err := s.PresignedURL.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"image\"")
+				return errors.Wrap(err, "decode field \"presigned_url\"")
+			}
+		case "x":
+			if err := func() error {
+				s.X.Reset()
+				if err := s.X.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"x\"")
+			}
+		case "y":
+			if err := func() error {
+				s.Y.Reset()
+				if err := s.Y.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"y\"")
 			}
 		default:
 			return d.Skip()

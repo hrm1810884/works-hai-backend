@@ -20,14 +20,8 @@ func (h *HaiHandler) PresignedUrlsGet(ctx context.Context) (ogen.PresignedUrlsGe
 	}
 
 	return &ogen.PresignedUrlsGetOK{
-		Result: ogen.OptPresignedUrlsGetOKResult{
-			Value: ogen.PresignedUrlsGetOKResult{
-				HumanDrawing: ogen.OptString{
-					Value: fetchedUrls["humanDrawing"],
-					Set:   true,
-				},
-			},
-			Set: true,
+		Result: ogen.PresignedUrlsGetOKResult{
+			HumanDrawing: fetchedUrls["humanDrawing"],
 		},
 	}, nil
 }

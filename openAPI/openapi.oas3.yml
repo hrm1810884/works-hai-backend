@@ -20,9 +20,15 @@ paths:
                         schema:
                             type: object
                             properties:
-                                image:
+                                presigned_url:
                                     type: string
-                                    description: The resource path in storage.
+                                    description: The presigned URL to be included in the request
+                                x:
+                                    type: integer
+                                    description: The x-coordinate
+                                y:
+                                    type: integer
+                                    description: The y-coordinate
             responses:
                 "200":
                     description: Drawing saved successfully.
@@ -82,13 +88,15 @@ paths:
                                                 type: string
                                             leftDrawing:
                                                 type: string
+                                        required:
+                                            - humanDrawing
                                 required:
-                                    - humanDrawing
+                                    - result
                             example:
                                 {
                                     "result":
                                         {
-                                            "humanDrawing": "https://example-cloud-storage.com/user_drawing.png?signature=...",
+                                            "humanDrawing": "https://storage.googleapis.com/hai-human-ai-interaction.appspot.com/fuga.png?x-goog-signature=0fdc9fe30bfdb5d113b80c7c5795e6a2b8d5edeb9840cfd3ce6e81c51847a4b2c3958c3a249e42434a4d06ff811ae1c4de0ec71e2f478dd0852fe447a376f49ade17966138c70eaf879c6f563bc98516588be4ecee9b96038698e004ff511f1502dd8bc96d02c8d7b2d04ddea9659ec6f4aa5df912f0a21bd5dc19ce52b443bcc2dd414a627a9de9608dd3cb3761edd125e119834dc36d26bfe8a1986765e333862d402d61b858abe7dc8a46237198ccccba47ab3de98df41166c8dc1312e955a39a6a582122505edf01a3b5eb172437cd91e7445a4f4dbcb0fc35e62a1bda003c1e59bc043c0bf747a17301d31dced2266070c1c2315a31d74d15058d2d22b9&x-goog-algorithm=GOOG4-RSA-SHA256&x-goog-credential=firebase-adminsdk-n0huy%40hai-human-ai-interaction.iam.gserviceaccount.com%2F20240607%2Fasia-northeast1%2Fstorage%2Fgoog4_request&x-goog-date=20240607T034507Z&x-goog-expires=600&x-goog-signedheaders=host",
                                             "topDrawing": "https://example-cloud-storage.com/user_drawing.png?signature=...",
                                             "rightDrawing": "https://example-cloud-storage.com/user_drawing.png?signature=...",
                                             "bottomDrawing": "https://example-cloud-storage.com/user_drawing.png?signature=...",

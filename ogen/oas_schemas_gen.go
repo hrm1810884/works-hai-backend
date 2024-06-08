@@ -65,38 +65,38 @@ func (s *ErrRespStatusCode) SetResponse(val ErrResp) {
 	s.Response = val
 }
 
-// NewOptPresignedUrlsGetOKResult returns new OptPresignedUrlsGetOKResult with value set to v.
-func NewOptPresignedUrlsGetOKResult(v PresignedUrlsGetOKResult) OptPresignedUrlsGetOKResult {
-	return OptPresignedUrlsGetOKResult{
+// NewOptInt returns new OptInt with value set to v.
+func NewOptInt(v int) OptInt {
+	return OptInt{
 		Value: v,
 		Set:   true,
 	}
 }
 
-// OptPresignedUrlsGetOKResult is optional PresignedUrlsGetOKResult.
-type OptPresignedUrlsGetOKResult struct {
-	Value PresignedUrlsGetOKResult
+// OptInt is optional int.
+type OptInt struct {
+	Value int
 	Set   bool
 }
 
-// IsSet returns true if OptPresignedUrlsGetOKResult was set.
-func (o OptPresignedUrlsGetOKResult) IsSet() bool { return o.Set }
+// IsSet returns true if OptInt was set.
+func (o OptInt) IsSet() bool { return o.Set }
 
 // Reset unsets value.
-func (o *OptPresignedUrlsGetOKResult) Reset() {
-	var v PresignedUrlsGetOKResult
+func (o *OptInt) Reset() {
+	var v int
 	o.Value = v
 	o.Set = false
 }
 
 // SetTo sets value to v.
-func (o *OptPresignedUrlsGetOKResult) SetTo(v PresignedUrlsGetOKResult) {
+func (o *OptInt) SetTo(v int) {
 	o.Set = true
 	o.Value = v
 }
 
 // Get returns value and boolean that denotes whether value was set.
-func (o OptPresignedUrlsGetOKResult) Get() (v PresignedUrlsGetOKResult, ok bool) {
+func (o OptInt) Get() (v int, ok bool) {
 	if !o.Set {
 		return v, false
 	}
@@ -104,7 +104,7 @@ func (o OptPresignedUrlsGetOKResult) Get() (v PresignedUrlsGetOKResult, ok bool)
 }
 
 // Or returns value if set, or given parameter if does not.
-func (o OptPresignedUrlsGetOKResult) Or(d PresignedUrlsGetOKResult) PresignedUrlsGetOKResult {
+func (o OptInt) Or(d int) int {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -168,16 +168,16 @@ type PresignedUrlsGetInternalServerError struct{}
 func (*PresignedUrlsGetInternalServerError) presignedUrlsGetRes() {}
 
 type PresignedUrlsGetOK struct {
-	Result OptPresignedUrlsGetOKResult `json:"result"`
+	Result PresignedUrlsGetOKResult `json:"result"`
 }
 
 // GetResult returns the value of Result.
-func (s *PresignedUrlsGetOK) GetResult() OptPresignedUrlsGetOKResult {
+func (s *PresignedUrlsGetOK) GetResult() PresignedUrlsGetOKResult {
 	return s.Result
 }
 
 // SetResult sets the value of Result.
-func (s *PresignedUrlsGetOK) SetResult(val OptPresignedUrlsGetOKResult) {
+func (s *PresignedUrlsGetOK) SetResult(val PresignedUrlsGetOKResult) {
 	s.Result = val
 }
 
@@ -185,7 +185,7 @@ func (*PresignedUrlsGetOK) presignedUrlsGetRes() {}
 
 type PresignedUrlsGetOKResult struct {
 	// Presigned URL for human drawing upload.
-	HumanDrawing  OptString `json:"humanDrawing"`
+	HumanDrawing  string    `json:"humanDrawing"`
 	TopDrawing    OptString `json:"topDrawing"`
 	RightDrawing  OptString `json:"rightDrawing"`
 	BottomDrawing OptString `json:"bottomDrawing"`
@@ -193,7 +193,7 @@ type PresignedUrlsGetOKResult struct {
 }
 
 // GetHumanDrawing returns the value of HumanDrawing.
-func (s *PresignedUrlsGetOKResult) GetHumanDrawing() OptString {
+func (s *PresignedUrlsGetOKResult) GetHumanDrawing() string {
 	return s.HumanDrawing
 }
 
@@ -218,7 +218,7 @@ func (s *PresignedUrlsGetOKResult) GetLeftDrawing() OptString {
 }
 
 // SetHumanDrawing sets the value of HumanDrawing.
-func (s *PresignedUrlsGetOKResult) SetHumanDrawing(val OptString) {
+func (s *PresignedUrlsGetOKResult) SetHumanDrawing(val string) {
 	s.HumanDrawing = val
 }
 
@@ -275,16 +275,40 @@ func (s *ResourcePathPostOK) SetMessage(val OptString) {
 func (*ResourcePathPostOK) resourcePathPostRes() {}
 
 type ResourcePathPostReq struct {
-	// The resource path in storage.
-	Image OptString `json:"image"`
+	// The presigned URL to be included in the request.
+	PresignedURL OptString `json:"presigned_url"`
+	// The x-coordinate.
+	X OptInt `json:"x"`
+	// The y-coordinate.
+	Y OptInt `json:"y"`
 }
 
-// GetImage returns the value of Image.
-func (s *ResourcePathPostReq) GetImage() OptString {
-	return s.Image
+// GetPresignedURL returns the value of PresignedURL.
+func (s *ResourcePathPostReq) GetPresignedURL() OptString {
+	return s.PresignedURL
 }
 
-// SetImage sets the value of Image.
-func (s *ResourcePathPostReq) SetImage(val OptString) {
-	s.Image = val
+// GetX returns the value of X.
+func (s *ResourcePathPostReq) GetX() OptInt {
+	return s.X
+}
+
+// GetY returns the value of Y.
+func (s *ResourcePathPostReq) GetY() OptInt {
+	return s.Y
+}
+
+// SetPresignedURL sets the value of PresignedURL.
+func (s *ResourcePathPostReq) SetPresignedURL(val OptString) {
+	s.PresignedURL = val
+}
+
+// SetX sets the value of X.
+func (s *ResourcePathPostReq) SetX(val OptInt) {
+	s.X = val
+}
+
+// SetY sets the value of Y.
+func (s *ResourcePathPostReq) SetY(val OptInt) {
+	s.Y = val
 }
