@@ -20,9 +20,12 @@ paths:
                         schema:
                             type: object
                             properties:
-                                position:
+                                x:
                                     type: integer
-                                    description: The human drawing positon
+                                    description: The x-coordinate
+                                y:
+                                    type: integer
+                                    description: The y-coordinate
             responses:
                 "200":
                     description: Drawing saved successfully.

@@ -211,15 +211,22 @@ func (s *ImageGenerationPostReq) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ImageGenerationPostReq) encodeFields(e *jx.Encoder) {
 	{
-		if s.Position.Set {
-			e.FieldStart("position")
-			s.Position.Encode(e)
+		if s.X.Set {
+			e.FieldStart("x")
+			s.X.Encode(e)
+		}
+	}
+	{
+		if s.Y.Set {
+			e.FieldStart("y")
+			s.Y.Encode(e)
 		}
 	}
 }
 
-var jsonFieldsNameOfImageGenerationPostReq = [1]string{
-	0: "position",
+var jsonFieldsNameOfImageGenerationPostReq = [2]string{
+	0: "x",
+	1: "y",
 }
 
 // Decode decodes ImageGenerationPostReq from json.
@@ -230,15 +237,25 @@ func (s *ImageGenerationPostReq) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "position":
+		case "x":
 			if err := func() error {
-				s.Position.Reset()
-				if err := s.Position.Decode(d); err != nil {
+				s.X.Reset()
+				if err := s.X.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"position\"")
+				return errors.Wrap(err, "decode field \"x\"")
+			}
+		case "y":
+			if err := func() error {
+				s.Y.Reset()
+				if err := s.Y.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"y\"")
 			}
 		default:
 			return d.Skip()

@@ -98,18 +98,30 @@ func (s *ImageGenerationPostOK) SetMessage(val OptString) {
 func (*ImageGenerationPostOK) imageGenerationPostRes() {}
 
 type ImageGenerationPostReq struct {
-	// The human drawing positon.
-	Position OptInt `json:"position"`
+	// The x-coordinate.
+	X OptInt `json:"x"`
+	// The y-coordinate.
+	Y OptInt `json:"y"`
 }
 
-// GetPosition returns the value of Position.
-func (s *ImageGenerationPostReq) GetPosition() OptInt {
-	return s.Position
+// GetX returns the value of X.
+func (s *ImageGenerationPostReq) GetX() OptInt {
+	return s.X
 }
 
-// SetPosition sets the value of Position.
-func (s *ImageGenerationPostReq) SetPosition(val OptInt) {
-	s.Position = val
+// GetY returns the value of Y.
+func (s *ImageGenerationPostReq) GetY() OptInt {
+	return s.Y
+}
+
+// SetX sets the value of X.
+func (s *ImageGenerationPostReq) SetX(val OptInt) {
+	s.X = val
+}
+
+// SetY sets the value of Y.
+func (s *ImageGenerationPostReq) SetY(val OptInt) {
+	s.Y = val
 }
 
 // NewOptInt returns new OptInt with value set to v.
