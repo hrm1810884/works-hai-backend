@@ -9,7 +9,7 @@ import (
 )
 
 type IGetSignedUrl interface {
-	GetSignedUrl(string, string) (string, error)
+	GetSignedUrl(resourceName string, method string) (string, error)
 }
 
 type GetSignedUrlService struct {
@@ -32,7 +32,7 @@ func NewGetSignedUrlService(ctx context.Context) (IGetSignedUrl, error) {
 	}, nil
 }
 
-func (s *GetSignedUrlService) GetSignedUrl(fileName string, method string) (string, error) {
+func (s *GetSignedUrlService) GetSignedUrl(resourceName string, method string) (string, error) {
 	cfg, err := config.Load()
 	if err != nil {
 		return "", fmt.Errorf("error loading config: %w", err)
@@ -40,7 +40,7 @@ func (s *GetSignedUrlService) GetSignedUrl(fileName string, method string) (stri
 
 	bucketName := cfg.Firebase.Bucket
 
-	presignedUrl, err := s.storageClient.GenerateSignedURL(bucketName, fileName, 15, method)
+	presignedUrl, err := s.storageClient.GenerateSignedURL(bucketName, resourceName, 15, method)
 	if err != nil {
 		return "", fmt.Errorf("error generating url: %w", err)
 	}

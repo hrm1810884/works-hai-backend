@@ -9,6 +9,7 @@ type IPosition interface {
 	GetNext() (*PositionEntity, error)
 	GetX() int
 	GetY() int
+	GetLoopNum() int
 }
 
 type PositionEntity struct {
@@ -28,7 +29,7 @@ func abs(a int) int {
 }
 
 func (p *PositionEntity) GetNext() (*PositionEntity, error) {
-	loopNum := max(abs(p.X), abs(p.Y)) // NOTE: n周回
+	loopNum := p.GetLoopNum()
 
 	switch {
 	case isOnBottomSide(p.X, p.Y, loopNum):
@@ -77,4 +78,8 @@ func (p *PositionEntity) GetX() int {
 
 func (p *PositionEntity) GetY() int {
 	return p.Y
+}
+
+func (p *PositionEntity) GetLoopNum() int {
+	return max(abs(p.X), abs(p.Y))
 }

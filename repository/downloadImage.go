@@ -35,7 +35,7 @@ func DownloadImage(url, filePath string) error {
 	}
 	defer resp.Body.Close()
 
-	log.Print("%w", resp)
+	log.Print("%w", url)
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to download image: received non-200 response code %d", resp.StatusCode)
 	}
