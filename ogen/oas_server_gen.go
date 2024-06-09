@@ -8,18 +8,18 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// ImageGenerationPost implements POST /image-generation operation.
+	//
+	// Post the resource path in storage to BE.
+	//
+	// POST /image-generation
+	ImageGenerationPost(ctx context.Context, req *ImageGenerationPostReq) (ImageGenerationPostRes, error)
 	// PresignedUrlsGet implements GET /presigned-urls operation.
 	//
 	// Retrieve presigned URLs for both Human and AI drawings.
 	//
 	// GET /presigned-urls
 	PresignedUrlsGet(ctx context.Context) (PresignedUrlsGetRes, error)
-	// ResourcePathPost implements POST /resource-path operation.
-	//
-	// Post the resource path in storage to BE.
-	//
-	// POST /resource-path
-	ResourcePathPost(ctx context.Context, req *ResourcePathPostReq) (ResourcePathPostRes, error)
 	// NewError creates *ErrRespStatusCode from error returned by handler.
 	//
 	// Used for common default response.

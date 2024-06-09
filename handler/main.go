@@ -9,10 +9,6 @@ import (
 
 type HaiHandler struct{}
 
-func (*HaiHandler) ResourcePathPost(ctx context.Context, req *ogen.ResourcePathPostReq) (ogen.ResourcePathPostRes, error) {
-	return &ogen.ResourcePathPostOK{}, nil
-}
-
 // NewError creates *ErrRespStatusCode from error returned by handler.
 //
 // Used for common default response.

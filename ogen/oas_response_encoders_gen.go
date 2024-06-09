@@ -13,6 +13,39 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 )
 
+func encodeImageGenerationPostResponse(response ImageGenerationPostRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *ImageGenerationPostOK:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *ImageGenerationPostBadRequest:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
 func encodePresignedUrlsGetResponse(response PresignedUrlsGetRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *PresignedUrlsGetOK:
@@ -37,39 +70,6 @@ func encodePresignedUrlsGetResponse(response PresignedUrlsGetRes, w http.Respons
 	case *PresignedUrlsGetInternalServerError:
 		w.WriteHeader(500)
 		span.SetStatus(codes.Error, http.StatusText(500))
-
-		return nil
-
-	default:
-		return errors.Errorf("unexpected response type: %T", response)
-	}
-}
-
-func encodeResourcePathPostResponse(response ResourcePathPostRes, w http.ResponseWriter, span trace.Span) error {
-	switch response := response.(type) {
-	case *ResourcePathPostOK:
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
-
-		e := new(jx.Encoder)
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-
-		return nil
-
-	case *ResourcePathPostBadRequest:
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
-
-		e := new(jx.Encoder)
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
 
 		return nil
 
