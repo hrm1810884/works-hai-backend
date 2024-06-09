@@ -10,24 +10,24 @@ import (
 	"firebase.google.com/go/v4/storage"
 )
 
-type FirebaseStorage struct {
+type FirebaseStorageRepository struct {
 	Client *storage.Client
 }
 
-func NewFirebaseStorage(ctx context.Context, app *firebase.App) (*FirebaseStorage, error) {
+func NewFirebaseStorageRepository(ctx context.Context, app *firebase.App) (*FirebaseStorageRepository, error) {
 	client, err := app.Storage(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize Firebase Storage client: %w", err)
 	}
 
-	return &FirebaseStorage{Client: client}, nil
+	return &FirebaseStorageRepository{Client: client}, nil
 }
 
-func (tfs *FirebaseStorage) GenerateSignedURL(bucketName, objectName string, expiry time.Duration) (string, error) {
+func (tfs *FirebaseStorageRepository) GenerateSignedURL(bucketName, objectName string, expiry time.Duration, method string) (string, error) {
 	// 署名付きURLのオプションを設定
 	opts := &cs.SignedURLOptions{
 		Scheme:  cs.SigningSchemeV4,
-		Method:  "PUT",
+		Method:  method,
 		Expires: time.Now().Add(expiry * time.Minute), // 有効期限
 	}
 
