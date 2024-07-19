@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hrm1810884/works-hai-backend/config"
-	"github.com/hrm1810884/works-hai-backend/repository"
+	"github.com/hrm1810884/works-hai-backend/infrastructure/storage"
 )
 
 type IGetSignedUrl interface {
@@ -13,7 +13,7 @@ type IGetSignedUrl interface {
 }
 
 type GetSignedUrlService struct {
-	storageClient *repository.FirebaseStorageRepository
+	storageClient *storage.FirebaseStorageRepository
 }
 
 func NewGetSignedUrlService(ctx context.Context) (IGetSignedUrl, error) {
@@ -22,7 +22,7 @@ func NewGetSignedUrlService(ctx context.Context) (IGetSignedUrl, error) {
 		return nil, fmt.Errorf("failed to initialize Firebase app: %w", err)
 	}
 
-	storageClient, err := repository.NewFirebaseStorageRepository(ctx, firebaseApp)
+	storageClient, err := storage.NewFirebaseStorageRepository(ctx, firebaseApp)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize storage client: %w", err)
 	}

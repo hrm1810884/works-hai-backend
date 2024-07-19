@@ -1,12 +1,12 @@
-package handler
+package controller
 
 import (
 	"context"
 	"log"
 
-	"github.com/hrm1810884/works-hai-backend/entity"
+	"github.com/hrm1810884/works-hai-backend/application/usecase"
+	"github.com/hrm1810884/works-hai-backend/domain/entity"
 	"github.com/hrm1810884/works-hai-backend/ogen"
-	"github.com/hrm1810884/works-hai-backend/usecase"
 )
 
 func (*HaiHandler) ImageGenerationPost(ctx context.Context, req *ogen.ImageGenerationPostReq) (ogen.ImageGenerationPostRes, error) {
