@@ -64,7 +64,7 @@ func isOnRightSide(x int, y int, loopNum int) bool {
 func isOnTopSide(x int, y int, loopNum int) bool {
 	return -1*loopNum < x && y == loopNum
 }
-func isOnLeftSide(x int, y int, loopNum int) bool { //nolint:unparam
+func isOnLeftSide(x int, y int, loopNum int) bool { //nolint: unusedparam
 	// y is not used in this function, but we want to keep the signature consistent
 	return x == -1*loopNum
 }

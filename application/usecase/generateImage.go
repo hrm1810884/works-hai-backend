@@ -6,9 +6,9 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/hrm1810884/works-hai-backend/entity"
-	"github.com/hrm1810884/works-hai-backend/repository"
-	"github.com/hrm1810884/works-hai-backend/usecase/service"
+	"github.com/hrm1810884/works-hai-backend/application/usecase/service"
+	"github.com/hrm1810884/works-hai-backend/domain/entity"
+	"github.com/hrm1810884/works-hai-backend/infrastructure/storage"
 )
 
 type IGenerateImage interface {
@@ -41,7 +41,7 @@ func (u *GenerateImageUsecase) GenerateAIDrawing(ctx context.Context) (string, e
 				return "", err
 			}
 
-			err = repository.DownloadImage(signedUrl, cfg.SavedPath)
+			err = storage.DownloadImage(signedUrl, cfg.SavedPath)
 			if err != nil {
 				return "", err
 			}
