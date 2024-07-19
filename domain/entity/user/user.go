@@ -9,18 +9,17 @@ type User struct {
 	updatedAt time.Time
 }
 
-func NewUser(userId UserId, position Position) *User {
-	now := time.Now()
+func NewUser(userId UserId, position Position, createdAt time.Time, updatedAt time.Time) *User {
 	return &User{
 		userId:    userId,
 		position:  position,
-		createdAt: now,
-		updatedAt: now,
+		createdAt: createdAt,
+		updatedAt: updatedAt,
 	}
 }
 
-func (u *User) GetId() UserId {
-	return u.userId
+func (u *User) GetId() *UserId {
+	return &u.userId
 }
 
 func (u *User) GetCreatedAt() time.Time {
@@ -30,4 +29,8 @@ func (u *User) GetCreatedAt() time.Time {
 // GetUpdatedAt returns the updatedAt time
 func (u *User) GetUpdatedAt() time.Time {
 	return u.updatedAt
+}
+
+func (u *User) GetPosition() *Position {
+	return &u.position
 }

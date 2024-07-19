@@ -9,6 +9,7 @@ import (
 
 func InitializeApp() (*firebase.App, error) {
 	config := &firebase.Config{
+		ProjectID:     "hai-human-ai-interaction",
 		StorageBucket: "storage-exp.appspot.com",
 	}
 	opt := option.WithCredentialsFile("config/private/storage-exp-key.json")
