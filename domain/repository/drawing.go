@@ -1,6 +1,6 @@
 package repository
 
 type DrawingRepository interface {
-	GetSignedUrls() error
+	GenerateSignedUrl() error
 	DownloadImage() error
 }
