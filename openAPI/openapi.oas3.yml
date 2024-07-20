@@ -37,6 +37,8 @@ paths:
                                     url:
                                         type: string
                                         example: "http://hogehoge"
+                                required:
+                                    - url
                 "400":
                     description: Invalid request - the request could not be understood due to malformed syntax or invalid data.
                     content:

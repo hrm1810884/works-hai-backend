@@ -82,16 +82,16 @@ func (s *GeneratePostBadRequest) SetError(val OptString) {
 func (*GeneratePostBadRequest) generatePostRes() {}
 
 type GeneratePostOK struct {
-	URL OptString `json:"url"`
+	URL string `json:"url"`
 }
 
 // GetURL returns the value of URL.
-func (s *GeneratePostOK) GetURL() OptString {
+func (s *GeneratePostOK) GetURL() string {
 	return s.URL
 }
 
 // SetURL sets the value of URL.
-func (s *GeneratePostOK) SetURL(val OptString) {
+func (s *GeneratePostOK) SetURL(val string) {
 	s.URL = val
 }
 
