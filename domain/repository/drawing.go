@@ -1,6 +1,7 @@
 package repository
 
+import "time"
+
 type DrawingRepository interface {
-	GenerateSignedUrl() error
-	DownloadImage() error
+	GenerateSignedUrl(drawingName string, expiry time.Duration, method string) (string, error)
 }

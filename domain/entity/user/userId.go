@@ -19,7 +19,7 @@ func NewUserId(id uuid.UUID) (*UserId, error) {
 	return userId, nil
 }
 
-func (u *UserId) GetDrawingNameFromId() string {
+func (u *UserId) GetDrawingName() string {
 	return u.id.String() + ".png"
 }
 
