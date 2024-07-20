@@ -13,9 +13,9 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 )
 
-func encodeImageGenerationPostResponse(response ImageGenerationPostRes, w http.ResponseWriter, span trace.Span) error {
+func encodeGeneratePostResponse(response GeneratePostRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *ImageGenerationPostOK:
+	case *GeneratePostOK:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
@@ -28,7 +28,7 @@ func encodeImageGenerationPostResponse(response ImageGenerationPostRes, w http.R
 
 		return nil
 
-	case *ImageGenerationPostBadRequest:
+	case *GeneratePostBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
@@ -46,9 +46,9 @@ func encodeImageGenerationPostResponse(response ImageGenerationPostRes, w http.R
 	}
 }
 
-func encodePresignedUrlsGetResponse(response PresignedUrlsGetRes, w http.ResponseWriter, span trace.Span) error {
+func encodeInitGetResponse(response InitGetRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *PresignedUrlsGetOK:
+	case *InitGetOK:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
@@ -61,13 +61,13 @@ func encodePresignedUrlsGetResponse(response PresignedUrlsGetRes, w http.Respons
 
 		return nil
 
-	case *PresignedUrlsGetBadRequest:
+	case *InitGetBadRequest:
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
 		return nil
 
-	case *PresignedUrlsGetInternalServerError:
+	case *InitGetInternalServerError:
 		w.WriteHeader(500)
 		span.SetStatus(codes.Error, http.StatusText(500))
 

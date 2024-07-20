@@ -14,7 +14,7 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func decodeImageGenerationPostResponse(resp *http.Response) (res ImageGenerationPostRes, _ error) {
+func decodeGeneratePostResponse(resp *http.Response) (res GeneratePostRes, _ error) {
 	switch resp.StatusCode {
 	case 200:
 		// Code 200.
@@ -30,7 +30,7 @@ func decodeImageGenerationPostResponse(resp *http.Response) (res ImageGeneration
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response ImageGenerationPostOK
+			var response GeneratePostOK
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -65,7 +65,7 @@ func decodeImageGenerationPostResponse(resp *http.Response) (res ImageGeneration
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response ImageGenerationPostBadRequest
+			var response GeneratePostBadRequest
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -132,7 +132,7 @@ func decodeImageGenerationPostResponse(resp *http.Response) (res ImageGeneration
 	return res, errors.Wrap(defRes, "error")
 }
 
-func decodePresignedUrlsGetResponse(resp *http.Response) (res PresignedUrlsGetRes, _ error) {
+func decodeInitGetResponse(resp *http.Response) (res InitGetRes, _ error) {
 	switch resp.StatusCode {
 	case 200:
 		// Code 200.
@@ -148,7 +148,7 @@ func decodePresignedUrlsGetResponse(resp *http.Response) (res PresignedUrlsGetRe
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response PresignedUrlsGetOK
+			var response InitGetOK
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -171,10 +171,10 @@ func decodePresignedUrlsGetResponse(resp *http.Response) (res PresignedUrlsGetRe
 		}
 	case 400:
 		// Code 400.
-		return &PresignedUrlsGetBadRequest{}, nil
+		return &InitGetBadRequest{}, nil
 	case 500:
 		// Code 500.
-		return &PresignedUrlsGetInternalServerError{}, nil
+		return &InitGetInternalServerError{}, nil
 	}
 	// Convenient error response.
 	defRes, err := func() (res *ErrRespStatusCode, err error) {

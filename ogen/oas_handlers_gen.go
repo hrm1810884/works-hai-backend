@@ -19,19 +19,19 @@ import (
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 
-// handleImageGenerationPostRequest handles POST /image-generation operation.
+// handleGeneratePostRequest handles POST /generate operation.
 //
-// Post the resource path in storage to BE.
+// Post id in storage to BE.
 //
-// POST /image-generation
-func (s *Server) handleImageGenerationPostRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// POST /generate
+func (s *Server) handleGeneratePostRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/image-generation"),
+		semconv.HTTPRouteKey.String("/generate"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ImageGenerationPost",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "GeneratePost",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -62,7 +62,7 @@ func (s *Server) handleImageGenerationPostRequest(args [0]string, argsEscaped bo
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "ImageGenerationPost",
+			Name: "GeneratePost",
 			ID:   "",
 		}
 	)
@@ -70,7 +70,7 @@ func (s *Server) handleImageGenerationPostRequest(args [0]string, argsEscaped bo
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			sctx, ok, err := s.securityApiKeyAuth(ctx, "ImageGenerationPost", r)
+			sctx, ok, err := s.securityApiKeyAuth(ctx, "GeneratePost", r)
 			if err != nil {
 				err = &ogenerrors.SecurityError{
 					OperationContext: opErrContext,
@@ -112,7 +112,7 @@ func (s *Server) handleImageGenerationPostRequest(args [0]string, argsEscaped bo
 			return
 		}
 	}
-	request, close, err := s.decodeImageGenerationPostRequest(r)
+	request, close, err := s.decodeGeneratePostRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -128,12 +128,12 @@ func (s *Server) handleImageGenerationPostRequest(args [0]string, argsEscaped bo
 		}
 	}()
 
-	var response ImageGenerationPostRes
+	var response GeneratePostRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
-			OperationName:    "ImageGenerationPost",
-			OperationSummary: "Resource path in storage",
+			OperationName:    "GeneratePost",
+			OperationSummary: "Generate AI Drawing",
 			OperationID:      "",
 			Body:             request,
 			Params:           middleware.Parameters{},
@@ -141,9 +141,9 @@ func (s *Server) handleImageGenerationPostRequest(args [0]string, argsEscaped bo
 		}
 
 		type (
-			Request  = *ImageGenerationPostReq
+			Request  = *GeneratePostReq
 			Params   = struct{}
-			Response = ImageGenerationPostRes
+			Response = GeneratePostRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -154,12 +154,12 @@ func (s *Server) handleImageGenerationPostRequest(args [0]string, argsEscaped bo
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ImageGenerationPost(ctx, request)
+				response, err = s.h.GeneratePost(ctx, request)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.ImageGenerationPost(ctx, request)
+		response, err = s.h.GeneratePost(ctx, request)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrRespStatusCode](err); ok {
@@ -178,7 +178,7 @@ func (s *Server) handleImageGenerationPostRequest(args [0]string, argsEscaped bo
 		return
 	}
 
-	if err := encodeImageGenerationPostResponse(response, w, span); err != nil {
+	if err := encodeGeneratePostResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
@@ -187,19 +187,19 @@ func (s *Server) handleImageGenerationPostRequest(args [0]string, argsEscaped bo
 	}
 }
 
-// handlePresignedUrlsGetRequest handles GET /presigned-urls operation.
+// handleInitGetRequest handles GET /init operation.
 //
 // Retrieve presigned URLs for both Human and AI drawings.
 //
-// GET /presigned-urls
-func (s *Server) handlePresignedUrlsGetRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// GET /init
+func (s *Server) handleInitGetRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/presigned-urls"),
+		semconv.HTTPRouteKey.String("/init"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "PresignedUrlsGet",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "InitGet",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -230,7 +230,7 @@ func (s *Server) handlePresignedUrlsGetRequest(args [0]string, argsEscaped bool,
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "PresignedUrlsGet",
+			Name: "InitGet",
 			ID:   "",
 		}
 	)
@@ -238,7 +238,7 @@ func (s *Server) handlePresignedUrlsGetRequest(args [0]string, argsEscaped bool,
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			sctx, ok, err := s.securityApiKeyAuth(ctx, "PresignedUrlsGet", r)
+			sctx, ok, err := s.securityApiKeyAuth(ctx, "InitGet", r)
 			if err != nil {
 				err = &ogenerrors.SecurityError{
 					OperationContext: opErrContext,
@@ -281,11 +281,11 @@ func (s *Server) handlePresignedUrlsGetRequest(args [0]string, argsEscaped bool,
 		}
 	}
 
-	var response PresignedUrlsGetRes
+	var response InitGetRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
-			OperationName:    "PresignedUrlsGet",
+			OperationName:    "InitGet",
 			OperationSummary: "Get presigned urls",
 			OperationID:      "",
 			Body:             nil,
@@ -296,7 +296,7 @@ func (s *Server) handlePresignedUrlsGetRequest(args [0]string, argsEscaped bool,
 		type (
 			Request  = struct{}
 			Params   = struct{}
-			Response = PresignedUrlsGetRes
+			Response = InitGetRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -307,12 +307,12 @@ func (s *Server) handlePresignedUrlsGetRequest(args [0]string, argsEscaped bool,
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.PresignedUrlsGet(ctx)
+				response, err = s.h.InitGet(ctx)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.PresignedUrlsGet(ctx)
+		response, err = s.h.InitGet(ctx)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrRespStatusCode](err); ok {
@@ -331,7 +331,7 @@ func (s *Server) handlePresignedUrlsGetRequest(args [0]string, argsEscaped bool,
 		return
 	}
 
-	if err := encodePresignedUrlsGetResponse(response, w, span); err != nil {
+	if err := encodeInitGetResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)

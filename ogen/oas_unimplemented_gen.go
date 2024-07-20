@@ -13,21 +13,21 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// ImageGenerationPost implements POST /image-generation operation.
+// GeneratePost implements POST /generate operation.
 //
-// Post the resource path in storage to BE.
+// Post id in storage to BE.
 //
-// POST /image-generation
-func (UnimplementedHandler) ImageGenerationPost(ctx context.Context, req *ImageGenerationPostReq) (r ImageGenerationPostRes, _ error) {
+// POST /generate
+func (UnimplementedHandler) GeneratePost(ctx context.Context, req *GeneratePostReq) (r GeneratePostRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// PresignedUrlsGet implements GET /presigned-urls operation.
+// InitGet implements GET /init operation.
 //
 // Retrieve presigned URLs for both Human and AI drawings.
 //
-// GET /presigned-urls
-func (UnimplementedHandler) PresignedUrlsGet(ctx context.Context) (r PresignedUrlsGetRes, _ error) {
+// GET /init
+func (UnimplementedHandler) InitGet(ctx context.Context) (r InitGetRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

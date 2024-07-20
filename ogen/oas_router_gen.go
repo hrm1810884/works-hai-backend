@@ -60,9 +60,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'i': // Prefix: "image-generation"
+			case 'g': // Prefix: "generate"
 				origElem := elem
-				if l := len("image-generation"); len(elem) >= l && elem[0:l] == "image-generation" {
+				if l := len("generate"); len(elem) >= l && elem[0:l] == "generate" {
 					elem = elem[l:]
 				} else {
 					break
@@ -72,7 +72,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					// Leaf node.
 					switch r.Method {
 					case "POST":
-						s.handleImageGenerationPostRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleGeneratePostRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "POST")
 					}
@@ -81,9 +81,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
-			case 'p': // Prefix: "presigned-urls"
+			case 'i': // Prefix: "init"
 				origElem := elem
-				if l := len("presigned-urls"); len(elem) >= l && elem[0:l] == "presigned-urls" {
+				if l := len("init"); len(elem) >= l && elem[0:l] == "init" {
 					elem = elem[l:]
 				} else {
 					break
@@ -93,7 +93,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					// Leaf node.
 					switch r.Method {
 					case "GET":
-						s.handlePresignedUrlsGetRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleInitGetRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "GET")
 					}
@@ -197,9 +197,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'i': // Prefix: "image-generation"
+			case 'g': // Prefix: "generate"
 				origElem := elem
-				if l := len("image-generation"); len(elem) >= l && elem[0:l] == "image-generation" {
+				if l := len("generate"); len(elem) >= l && elem[0:l] == "generate" {
 					elem = elem[l:]
 				} else {
 					break
@@ -209,10 +209,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					// Leaf node.
 					switch method {
 					case "POST":
-						r.name = "ImageGenerationPost"
-						r.summary = "Resource path in storage"
+						r.name = "GeneratePost"
+						r.summary = "Generate AI Drawing"
 						r.operationID = ""
-						r.pathPattern = "/image-generation"
+						r.pathPattern = "/generate"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -222,9 +222,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 
 				elem = origElem
-			case 'p': // Prefix: "presigned-urls"
+			case 'i': // Prefix: "init"
 				origElem := elem
-				if l := len("presigned-urls"); len(elem) >= l && elem[0:l] == "presigned-urls" {
+				if l := len("init"); len(elem) >= l && elem[0:l] == "init" {
 					elem = elem[l:]
 				} else {
 					break
@@ -234,10 +234,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					// Leaf node.
 					switch method {
 					case "GET":
-						r.name = "PresignedUrlsGet"
+						r.name = "InitGet"
 						r.summary = "Get presigned urls"
 						r.operationID = ""
-						r.pathPattern = "/presigned-urls"
+						r.pathPattern = "/init"
 						r.args = args
 						r.count = 0
 						return r, true
