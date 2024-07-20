@@ -53,6 +53,7 @@ func TestImplUserRepository_Integration(t *testing.T) {
 	userData := user.NewUser(
 		*userId,
 		*user.NewPosition(1, 2),
+		"hogehoge",
 		time.Now(),
 		time.Now(),
 	)

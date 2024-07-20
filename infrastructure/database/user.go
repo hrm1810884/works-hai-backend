@@ -33,6 +33,7 @@ type UserData struct {
 	UserId    string
 	PosX      int
 	PosY      int
+	url       string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -49,7 +50,7 @@ func ConvertDataToUser(data UserData) (*user.User, error) {
 	}
 
 	position := user.NewPosition(data.PosX, data.PosY)
-	user := user.NewUser(*userId, *position, data.CreatedAt, data.UpdatedAt)
+	user := user.NewUser(*userId, *position, data.url, data.CreatedAt, data.UpdatedAt)
 	return user, nil
 }
 
