@@ -33,7 +33,7 @@ type UserData struct {
 	UserId    string
 	PosX      int
 	PosY      int
-	url       string
+	Url       string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -50,7 +50,7 @@ func ConvertDataToUser(data UserData) (*user.User, error) {
 	}
 
 	position := user.NewPosition(data.PosX, data.PosY)
-	user := user.NewUser(*userId, *position, data.url, data.CreatedAt, data.UpdatedAt)
+	user := user.NewUser(*userId, *position, data.Url, data.CreatedAt, data.UpdatedAt)
 	return user, nil
 }
 
@@ -60,6 +60,7 @@ func ConvertUserToData(user user.User) *UserData {
 		UserId:    user.GetId().ToId(),
 		PosX:      user.GetPosition().GetX(),
 		PosY:      user.GetPosition().GetY(),
+		Url:       user.GetUrl(),
 		CreatedAt: user.GetCreatedAt(),
 		UpdatedAt: now,
 	}
@@ -78,7 +79,7 @@ func (ur *ImplUserRepository) Create(user user.User) error {
 	return nil
 }
 
-func (ur *ImplUserRepository) FindById(userId *user.UserId) (*user.User, error) {
+func (ur *ImplUserRepository) FindById(userId user.UserId) (*user.User, error) {
 	ctx := context.Background()
 	query := ur.Client.Collection("users").
 		Where("UserId", "==", userId.ToId()).
@@ -119,8 +120,8 @@ func (ur *ImplUserRepository) FindByPos(pos user.Position) (*user.User, error) {
 	return ConvertDataToUser(userData)
 }
 
-func (ur *ImplUserRepository) Update(user *user.User) error {
-	userData := ConvertUserToData(*user)
+func (ur *ImplUserRepository) Update(user user.User) error {
+	userData := ConvertUserToData(user)
 	ctx := context.Background()
 
 	_, err := ur.Client.Collection("users").Doc(user.GetId().ToId()).Set(ctx, userData)
@@ -131,7 +132,7 @@ func (ur *ImplUserRepository) Update(user *user.User) error {
 	return nil
 }
 
-func (ur *ImplUserRepository) Delete(userId *user.UserId) error {
+func (ur *ImplUserRepository) Delete(userId user.UserId) error {
 	ctx := context.Background()
 	_, err := ur.Client.Collection("users").Doc(userId.ToId()).Delete(ctx)
 	if err != nil {

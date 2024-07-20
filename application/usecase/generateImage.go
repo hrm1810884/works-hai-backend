@@ -23,17 +23,8 @@ func NewGenerateDrawingUsecase(ur repository.UserRepository, dr repository.Drawi
 	}, nil
 }
 
-func (u *GenerateDrawingUsecase) GenerateAIDrawing(id string) (drawingUrl string, err error) {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return "", fmt.Errorf("failed to convert id to uuid: %w", err)
-	}
-	userId, err := user.NewUserId(uid)
-	if err != nil {
-		return "", fmt.Errorf("failed to create userId: %w", err)
-	}
-
-	userData, err := u.userRepository.FindById(*userId)
+func (u *GenerateDrawingUsecase) GenerateAIDrawing(userId user.UserId) (drawingUrl string, err error) {
+	userData, err := u.userRepository.FindById(userId)
 	if err != nil {
 		return "", fmt.Errorf("not found user by id: %w", err)
 	}

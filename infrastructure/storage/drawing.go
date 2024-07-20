@@ -96,7 +96,7 @@ func (dr *ImplDrawingRepository) UploadDrawing(fileName string, fileData []byte)
 	return signedURL, nil
 }
 
-func (dr *ImplDrawingRepository) DownloadDrawing(url, filePath string) (data []byte, err error) {
+func (dr *ImplDrawingRepository) DownloadDrawing(url string) (data []byte, err error) {
 	validUrl, err := validateURL(url)
 	if err != nil {
 		// Handle the error appropriately

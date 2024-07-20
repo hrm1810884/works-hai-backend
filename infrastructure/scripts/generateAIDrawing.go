@@ -29,7 +29,7 @@ func GenerateAIDrawing(drawingData map[string][]byte) ([]byte, error) {
 
 	outputPath := "image/out.png"
 
-	err := executePythonScript("./process_image.py", inputPaths, outputPath)
+	err := executePythonScript("./infrastructure/scripts/process_image.py", inputPaths, outputPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute Python script: %w", err)
 	}
