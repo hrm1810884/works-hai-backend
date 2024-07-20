@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/google/uuid"
 	"github.com/hrm1810884/works-hai-backend/config"
 	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
 )
@@ -32,17 +33,24 @@ type UserData struct {
 	UserId    string
 	PosX      int
 	PosY      int
+	Url       string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 func ConvertDataToUser(data UserData) (*user.User, error) {
-	userId, err := user.NewUserId(data.UserId)
+	id, err := uuid.Parse(data.UserId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert id to uuid: %w", err)
+	}
+
+	userId, err := user.NewUserId(id)
 	if err != nil {
 		return nil, fmt.Errorf("convert error: %w", err)
 	}
+
 	position := user.NewPosition(data.PosX, data.PosY)
-	user := user.NewUser(*userId, *position, data.CreatedAt, data.UpdatedAt)
+	user := user.NewUser(*userId, *position, data.Url, data.CreatedAt, data.UpdatedAt)
 	return user, nil
 }
 
@@ -52,6 +60,7 @@ func ConvertUserToData(user user.User) *UserData {
 		UserId:    user.GetId().ToId(),
 		PosX:      user.GetPosition().GetX(),
 		PosY:      user.GetPosition().GetY(),
+		Url:       user.GetUrl(),
 		CreatedAt: user.GetCreatedAt(),
 		UpdatedAt: now,
 	}
@@ -70,7 +79,7 @@ func (ur *ImplUserRepository) Create(user user.User) error {
 	return nil
 }
 
-func (ur *ImplUserRepository) FindById(userId *user.UserId) (*user.User, error) {
+func (ur *ImplUserRepository) FindById(userId user.UserId) (*user.User, error) {
 	ctx := context.Background()
 	query := ur.Client.Collection("users").
 		Where("UserId", "==", userId.ToId()).
@@ -111,8 +120,8 @@ func (ur *ImplUserRepository) FindByPos(pos user.Position) (*user.User, error) {
 	return ConvertDataToUser(userData)
 }
 
-func (ur *ImplUserRepository) Update(user *user.User) error {
-	userData := ConvertUserToData(*user)
+func (ur *ImplUserRepository) Update(user user.User) error {
+	userData := ConvertUserToData(user)
 	ctx := context.Background()
 
 	_, err := ur.Client.Collection("users").Doc(user.GetId().ToId()).Set(ctx, userData)
@@ -123,7 +132,7 @@ func (ur *ImplUserRepository) Update(user *user.User) error {
 	return nil
 }
 
-func (ur *ImplUserRepository) Delete(userId *user.UserId) error {
+func (ur *ImplUserRepository) Delete(userId user.UserId) error {
 	ctx := context.Background()
 	_, err := ur.Client.Collection("users").Doc(userId.ToId()).Delete(ctx)
 	if err != nil {

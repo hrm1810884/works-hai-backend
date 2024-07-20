@@ -79,29 +79,50 @@ func (p *Position) GetLoopNum() int {
 	return max(abs(p.X), abs(p.Y))
 }
 
-func (p *Position) isTopDrawn() bool {
+func (p *Position) GetTop() *Position {
 	loopNum := p.GetLoopNum()
-	x := p.GetX()
-	y := p.GetY()
-	return -1*loopNum <= x && x < loopNum && y == -1*loopNum || x == -1*loopNum && -1*loopNum <= y && y < loopNum
+	currentX := p.GetX()
+	currentY := p.GetY()
+	isDrawn := -1*loopNum <= currentX && currentX < loopNum && currentY == -1*loopNum || currentX == -1*loopNum && -1*loopNum <= currentY && currentY < loopNum
+	if isDrawn {
+		return NewPosition(currentX, currentY+1)
+	} else {
+		return nil
+	}
 }
 
-func (p *Position) isLeftDrawn() bool {
+func (p *Position) GetLeft() *Position {
 	loopNum := p.GetLoopNum()
-	x := p.GetX()
-	y := p.GetY()
-	return -1*(loopNum-1) < x && x <= loopNum && y == -1*loopNum || x == loopNum && -1*loopNum <= y && y <= loopNum-1
+	currentX := p.GetX()
+	currentY := p.GetY()
+	isDrawn := -1*(loopNum-1) < currentX && currentX <= loopNum && currentY == -1*loopNum || currentX == loopNum && -1*loopNum <= currentY && currentY <= loopNum-1
+	if isDrawn {
+		return NewPosition(currentX-1, currentY)
+	} else {
+		return nil
+	}
 }
 
-func (p *Position) isBottomDrawn() bool {
+func (p *Position) GetBottom() *Position {
 	loopNum := p.GetLoopNum()
-	x := p.GetX()
-	y := p.GetY()
-	return -1*loopNum < x && x <= loopNum && y == loopNum || x == loopNum && -1*loopNum < y && y <= loopNum
+	currentX := p.GetX()
+	currentY := p.GetY()
+	isDrawn := -1*loopNum < currentX && currentX <= loopNum && currentY == loopNum || currentX == loopNum && -1*loopNum < currentY && currentY <= loopNum
+	if isDrawn {
+		return NewPosition(currentX, currentY-1)
+	} else {
+		return nil
+	}
 }
-func (p *Position) isRightDrawn() bool {
+
+func (p *Position) GetRight() *Position {
 	loopNum := p.GetLoopNum()
-	x := p.GetX()
-	y := p.GetY()
-	return -1*loopNum <= x && x < loopNum && y == loopNum || x == -1*loopNum && -1*loopNum <= y && y <= loopNum
+	currentX := p.GetX()
+	currentY := p.GetY()
+	isDrawn := -1*loopNum <= currentX && currentX < loopNum && currentY == loopNum || currentX == -1*loopNum && -1*loopNum <= currentY && currentY <= loopNum
+	if isDrawn {
+		return NewPosition(currentX+1, currentY)
+	} else {
+		return nil
+	}
 }

@@ -22,18 +22,18 @@ import (
 
 // Invoker invokes operations described by OpenAPI v3 specification.
 type Invoker interface {
-	// ImageGenerationPost invokes POST /image-generation operation.
+	// GeneratePost invokes POST /generate operation.
 	//
-	// Post the resource path in storage to BE.
+	// Post id in storage to BE.
 	//
-	// POST /image-generation
-	ImageGenerationPost(ctx context.Context, request *ImageGenerationPostReq) (ImageGenerationPostRes, error)
-	// PresignedUrlsGet invokes GET /presigned-urls operation.
+	// POST /generate
+	GeneratePost(ctx context.Context, request *GeneratePostReq) (GeneratePostRes, error)
+	// InitGet invokes GET /init operation.
 	//
 	// Retrieve presigned URLs for both Human and AI drawings.
 	//
-	// GET /presigned-urls
-	PresignedUrlsGet(ctx context.Context) (PresignedUrlsGetRes, error)
+	// GET /init
+	InitGet(ctx context.Context) (InitGetRes, error)
 }
 
 // Client implements OAS client.
@@ -90,20 +90,20 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 	return u
 }
 
-// ImageGenerationPost invokes POST /image-generation operation.
+// GeneratePost invokes POST /generate operation.
 //
-// Post the resource path in storage to BE.
+// Post id in storage to BE.
 //
-// POST /image-generation
-func (c *Client) ImageGenerationPost(ctx context.Context, request *ImageGenerationPostReq) (ImageGenerationPostRes, error) {
-	res, err := c.sendImageGenerationPost(ctx, request)
+// POST /generate
+func (c *Client) GeneratePost(ctx context.Context, request *GeneratePostReq) (GeneratePostRes, error) {
+	res, err := c.sendGeneratePost(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendImageGenerationPost(ctx context.Context, request *ImageGenerationPostReq) (res ImageGenerationPostRes, err error) {
+func (c *Client) sendGeneratePost(ctx context.Context, request *GeneratePostReq) (res GeneratePostRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/image-generation"),
+		semconv.HTTPRouteKey.String("/generate"),
 	}
 
 	// Run stopwatch.
@@ -118,7 +118,7 @@ func (c *Client) sendImageGenerationPost(ctx context.Context, request *ImageGene
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ImageGenerationPost",
+	ctx, span := c.cfg.Tracer.Start(ctx, "GeneratePost",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -136,7 +136,7 @@ func (c *Client) sendImageGenerationPost(ctx context.Context, request *ImageGene
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/image-generation"
+	pathParts[0] = "/generate"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -144,7 +144,7 @@ func (c *Client) sendImageGenerationPost(ctx context.Context, request *ImageGene
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
 	}
-	if err := encodeImageGenerationPostRequest(request, r); err != nil {
+	if err := encodeGeneratePostRequest(request, r); err != nil {
 		return res, errors.Wrap(err, "encode request")
 	}
 
@@ -153,7 +153,7 @@ func (c *Client) sendImageGenerationPost(ctx context.Context, request *ImageGene
 		var satisfied bitset
 		{
 			stage = "Security:ApiKeyAuth"
-			switch err := c.securityApiKeyAuth(ctx, "ImageGenerationPost", r); {
+			switch err := c.securityApiKeyAuth(ctx, "GeneratePost", r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -189,7 +189,7 @@ func (c *Client) sendImageGenerationPost(ctx context.Context, request *ImageGene
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeImageGenerationPostResponse(resp)
+	result, err := decodeGeneratePostResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -197,20 +197,20 @@ func (c *Client) sendImageGenerationPost(ctx context.Context, request *ImageGene
 	return result, nil
 }
 
-// PresignedUrlsGet invokes GET /presigned-urls operation.
+// InitGet invokes GET /init operation.
 //
 // Retrieve presigned URLs for both Human and AI drawings.
 //
-// GET /presigned-urls
-func (c *Client) PresignedUrlsGet(ctx context.Context) (PresignedUrlsGetRes, error) {
-	res, err := c.sendPresignedUrlsGet(ctx)
+// GET /init
+func (c *Client) InitGet(ctx context.Context) (InitGetRes, error) {
+	res, err := c.sendInitGet(ctx)
 	return res, err
 }
 
-func (c *Client) sendPresignedUrlsGet(ctx context.Context) (res PresignedUrlsGetRes, err error) {
+func (c *Client) sendInitGet(ctx context.Context) (res InitGetRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/presigned-urls"),
+		semconv.HTTPRouteKey.String("/init"),
 	}
 
 	// Run stopwatch.
@@ -225,7 +225,7 @@ func (c *Client) sendPresignedUrlsGet(ctx context.Context) (res PresignedUrlsGet
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "PresignedUrlsGet",
+	ctx, span := c.cfg.Tracer.Start(ctx, "InitGet",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -243,7 +243,7 @@ func (c *Client) sendPresignedUrlsGet(ctx context.Context) (res PresignedUrlsGet
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/presigned-urls"
+	pathParts[0] = "/init"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -257,7 +257,7 @@ func (c *Client) sendPresignedUrlsGet(ctx context.Context) (res PresignedUrlsGet
 		var satisfied bitset
 		{
 			stage = "Security:ApiKeyAuth"
-			switch err := c.securityApiKeyAuth(ctx, "PresignedUrlsGet", r); {
+			switch err := c.securityApiKeyAuth(ctx, "InitGet", r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -293,7 +293,7 @@ func (c *Client) sendPresignedUrlsGet(ctx context.Context) (res PresignedUrlsGet
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodePresignedUrlsGetResponse(resp)
+	result, err := decodeInitGetResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

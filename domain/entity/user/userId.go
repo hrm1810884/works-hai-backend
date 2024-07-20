@@ -1,24 +1,28 @@
 package user
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+)
 
 type UserId struct {
-	id string
+	id uuid.UUID
 }
 
-func NewUserId(id string) (*UserId, error) {
+func NewUserId(id uuid.UUID) (*UserId, error) {
 	userId := new(UserId)
-	if id == "" {
+	if id == uuid.Nil {
 		return nil, fmt.Errorf("NewUserId Error: userId is required")
 	}
 	userId.id = id
 	return userId, nil
 }
 
-func (u *UserId) GetDrawingNameFromId() string {
-	return u.id + ".png"
+func (u *UserId) GetDrawingName() string {
+	return u.id.String() + ".png"
 }
 
 func (u *UserId) ToId() string {
-	return u.id
+	return u.id.String()
 }

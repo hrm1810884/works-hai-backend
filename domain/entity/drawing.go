@@ -10,7 +10,7 @@ type Drawing struct {
 
 func NewDrawing(userId *user.UserId) *Drawing {
 	return &Drawing{
-		FileName:  userId.GetDrawingNameFromId(),
+		FileName:  userId.GetDrawingName(),
 		UrlToGet:  "",
 		UrlToPost: "",
 	}

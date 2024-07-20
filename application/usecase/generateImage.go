@@ -1,66 +1,60 @@
 package usecase
 
 import (
-	"context"
 	"fmt"
-	"os"
-	"os/exec"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/hrm1810884/works-hai-backend/application/usecase/service"
-	"github.com/hrm1810884/works-hai-backend/domain/entity"
-	"github.com/hrm1810884/works-hai-backend/infrastructure/storage"
+	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
+	"github.com/hrm1810884/works-hai-backend/domain/repository"
 )
 
-type IGenerateImage interface {
-	GenerateAIDrawing(ctx context.Context) (string, error)
+type GenerateDrawingUsecase struct {
+	userRepository    repository.UserRepository
+	drawingRepository repository.DrawingRepository
+	urlService        service.GetSignedUrlService
+	generateService   service.GenerateDrawingService
 }
 
-type GenerateImageUsecase struct {
-	QuadImages entity.QuadImagesEntity
+func NewGenerateDrawingUsecase(ur repository.UserRepository, dr repository.DrawingRepository, urlService service.GetSignedUrlService, generateService service.GenerateDrawingService) (*GenerateDrawingUsecase, error) {
+	return &GenerateDrawingUsecase{
+		userRepository: ur, drawingRepository: dr, urlService: urlService, generateService: generateService,
+	}, nil
 }
 
-func NewGenerateImageUsecase(ctx context.Context, currentPosition entity.IPosition) IGenerateImage {
-	quadImages := entity.NewQuadImages(ctx, currentPosition)
-	return &GenerateImageUsecase{
-		QuadImages: quadImages,
-	}
-}
-
-func (u *GenerateImageUsecase) GenerateAIDrawing(ctx context.Context) (string, error) {
-	imagePaths := []string{}
-
-	s, err := service.NewGetSignedUrlService(ctx)
+func (u *GenerateDrawingUsecase) GenerateAIDrawing(userId user.UserId) (drawingUrl string, err error) {
+	userData, err := u.userRepository.FindById(userId)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("not found user by id: %w", err)
 	}
 
-	for pos, cfg := range u.QuadImages.Config {
-		if cfg.IsDrawn {
-			signedUrl, err := s.GetSignedUrl(cfg.ResourceName, "GET")
-			if err != nil {
-				return "", err
-			}
-
-			err = storage.DownloadImage(signedUrl, cfg.SavedPath)
-			if err != nil {
-				return "", err
-			}
-
-			imagePaths = append(imagePaths, fmt.Sprintf("%s=%s", pos, cfg.SavedPath))
-
-		}
-	}
-
-	err = executePythonScript("./usecase/scripts/process_image.py", imagePaths)
+	aiPosition, err := userData.GetPosition().GetNext()
 	if err != nil {
-		return "", fmt.Errorf("failed to execute Python script: %w", err)
+		return "", fmt.Errorf("failed to get next ai position: %w", err)
 	}
-	return "Images processed successfully", nil
-}
 
-func executePythonScript(scriptPath string, imagePaths []string) error {
-	cmd := exec.Command("python3", append([]string{scriptPath}, imagePaths...)...) //nolint:gosec
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	generatedDrawing, err := u.generateService.GenerateDrawing(aiPosition)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate drawing: %w", err)
+	}
+
+	aiId, err := user.NewUserId(uuid.New())
+	if err != nil {
+		return "", fmt.Errorf("failed to get userId for ai generation: %w", err)
+	}
+
+	drawingUrl, err = u.drawingRepository.UploadDrawing(aiId.GetDrawingName(), generatedDrawing)
+	if err != nil {
+		return "", fmt.Errorf("failed to upload ai drawing:%w", err)
+	}
+
+	now := time.Now()
+	aiData := user.NewUser(*aiId, *aiPosition, drawingUrl, now, now)
+	err = u.userRepository.Create(*aiData)
+	if err != nil {
+		return "", fmt.Errorf("failed to create ai data in db: %w", err)
+	}
+
+	return drawingUrl, nil
 }
