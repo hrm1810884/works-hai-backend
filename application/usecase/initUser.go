@@ -38,11 +38,11 @@ func (u *InitUserUsecase) InitUser(posX int, posY int) (url string, id string, e
 	}
 
 	now := time.Now()
-	newUser := user.NewUser(*userId, *currentPosition, urlForPost, now, now)
+	newUser := user.NewUser(*userId, *currentPosition, urlForGet, now, now)
 	err = u.Repository.Create(*newUser)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to init user in db: %w", err)
 	}
 
-	return urlForGet, userId.ToId(), nil
+	return urlForPost, userId.ToId(), nil
 }
