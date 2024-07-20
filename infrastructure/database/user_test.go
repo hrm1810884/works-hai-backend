@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/hrm1810884/works-hai-backend/config"
 	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
 	"github.com/hrm1810884/works-hai-backend/infrastructure/database"
@@ -44,7 +45,8 @@ func TestImplUserRepository_Integration(t *testing.T) {
 	userRepo := &database.ImplUserRepository{Client: client}
 
 	// テストデータの作成
-	userId, err := user.NewUserId("testUser")
+	id := uuid.New()
+	userId, err := user.NewUserId(id)
 	if err != nil {
 		t.Fatalf("failed to get user id: %v", err)
 	}

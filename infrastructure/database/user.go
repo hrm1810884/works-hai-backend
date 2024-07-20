@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/google/uuid"
 	"github.com/hrm1810884/works-hai-backend/config"
 	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
 )
@@ -37,10 +38,16 @@ type UserData struct {
 }
 
 func ConvertDataToUser(data UserData) (*user.User, error) {
-	userId, err := user.NewUserId(data.UserId)
+	id, err := uuid.Parse(data.UserId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert id to uuid: %w", err)
+	}
+
+	userId, err := user.NewUserId(id)
 	if err != nil {
 		return nil, fmt.Errorf("convert error: %w", err)
 	}
+
 	position := user.NewPosition(data.PosX, data.PosY)
 	user := user.NewUser(*userId, *position, data.CreatedAt, data.UpdatedAt)
 	return user, nil
