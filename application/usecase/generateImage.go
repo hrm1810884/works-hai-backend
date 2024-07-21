@@ -14,10 +14,10 @@ type GenerateDrawingUsecase struct {
 	userRepository    repository.UserRepository
 	drawingRepository repository.DrawingRepository
 	urlService        service.GetSignedUrlService
-	generateService   service.GenerateDrawingService
+	generateService   service.DrawingService
 }
 
-func NewGenerateDrawingUsecase(ur repository.UserRepository, dr repository.DrawingRepository, urlService service.GetSignedUrlService, generateService service.GenerateDrawingService) (*GenerateDrawingUsecase, error) {
+func NewGenerateDrawingUsecase(ur repository.UserRepository, dr repository.DrawingRepository, urlService service.GetSignedUrlService, generateService service.DrawingService) (*GenerateDrawingUsecase, error) {
 	return &GenerateDrawingUsecase{
 		userRepository: ur, drawingRepository: dr, urlService: urlService, generateService: generateService,
 	}, nil

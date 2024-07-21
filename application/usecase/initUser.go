@@ -11,38 +11,52 @@ import (
 )
 
 type InitUserUsecase struct {
-	Repository repository.UserRepository
-	Service    service.GetSignedUrlService
+	repository     repository.UserRepository
+	urlService     service.GetSignedUrlService
+	drawingService service.DrawingService
 }
 
-func NewInitUserUsercase(service service.GetSignedUrlService, repository repository.UserRepository) (*InitUserUsecase, error) {
-	return &InitUserUsecase{Repository: repository, Service: service}, nil
+func NewInitUserUsercase(repository repository.UserRepository, urlService service.GetSignedUrlService, drawingService service.DrawingService) (*InitUserUsecase, error) {
+	return &InitUserUsecase{repository, urlService, drawingService}, nil
 }
 
-func (u *InitUserUsecase) InitUser(posX int, posY int) (url string, id string, err error) {
+func (u *InitUserUsecase) InitUser(posX int, posY int) (urls map[string]string, id string, err error) {
 	currentPosition := user.NewPosition(posX, posY)
 	userId, err := user.NewUserId(uuid.New())
 	if err != nil {
-		return "", "", fmt.Errorf("failed to get userId in InitUser: %w", err)
+		return nil, "", fmt.Errorf("failed to get userId in InitUser: %w", err)
 	}
 	drawingName := userId.GetDrawingName()
 
-	urlForGet, err := u.Service.GetSignedUrl(drawingName, "get")
+	quadUrls, err := u.drawingService.GetQuadUrls(*currentPosition)
 	if err != nil {
-		return "", "", fmt.Errorf("failed to get url for get: %w", err)
+		return nil, "", fmt.Errorf("failed to get quad urls for (%d, %d): %w", posX, posY, err)
 	}
 
-	urlForPost, err := u.Service.GetSignedUrl(drawingName, "post")
+	urlForGet, err := u.urlService.GetSignedUrl(drawingName, "get")
 	if err != nil {
-		return "", "", fmt.Errorf("failed to get url for post: %w", err)
+		return nil, "", fmt.Errorf("failed to get url for get: %w", err)
+	}
+
+	urlForPost, err := u.urlService.GetSignedUrl(drawingName, "post")
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to get url for post: %w", err)
 	}
 
 	now := time.Now()
 	newUser := user.NewUser(*userId, *currentPosition, urlForGet, now, now)
-	err = u.Repository.Create(*newUser)
+	err = u.repository.Create(*newUser)
 	if err != nil {
-		return "", "", fmt.Errorf("failed to init user in db: %w", err)
+		return nil, "", fmt.Errorf("failed to init user in db: %w", err)
 	}
 
-	return urlForPost, userId.ToId(), nil
+	urls = map[string]string{
+		"human":  urlForPost,
+		"top":    quadUrls["top"],
+		"right":  quadUrls["right"],
+		"bottom": quadUrls["bottom"],
+		"left":   quadUrls["left"],
+	}
+
+	return urls, userId.ToId(), nil
 }
