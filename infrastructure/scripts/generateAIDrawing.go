@@ -1,13 +1,19 @@
 package scripts
 
 import (
+	"bytes"
 	"fmt"
+	"io"
+	"mime/multipart"
+	"net/http"
 	"os"
-	"os/exec"
+	"path/filepath"
+
+	"github.com/hrm1810884/works-hai-backend/config"
 )
 
 func GenerateAIDrawing(drawingData map[string][]byte) ([]byte, error) {
-	inputPaths := []string{} // ["top=hoge.png", "bottom=fuga.png"]
+	inputPaths := map[string]string{}
 
 	positions := map[string][]byte{
 		"top":    drawingData["top"],
@@ -18,20 +24,20 @@ func GenerateAIDrawing(drawingData map[string][]byte) ([]byte, error) {
 
 	for direction, posData := range positions {
 		if posData != nil {
-			filepath := "image/" + direction + ".png"
-			err := SaveToLocal(posData, filepath)
+			filePath := "image/" + direction + ".png"
+			err := SaveToLocal(posData, filePath)
 			if err != nil {
-				return nil, fmt.Errorf("failed to download %s drawing: %w", direction, err)
+				return nil, fmt.Errorf("failed to save %s drawing: %w", direction, err)
 			}
-			inputPaths = append(inputPaths, fmt.Sprintf("%s=%s", direction, filepath))
+			inputPaths[direction] = filePath
 		}
 	}
 
 	outputPath := "image/out.png"
 
-	err := executePythonScript("./infrastructure/scripts/process_image.py", inputPaths, outputPath)
+	err := sendHTTPPostRequest(inputPaths, outputPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute Python script: %w", err)
+		return nil, fmt.Errorf("failed to send HTTP POST request: %w", err)
 	}
 	data, err := ReadFromLocal(outputPath)
 	if err != nil {
@@ -40,12 +46,74 @@ func GenerateAIDrawing(drawingData map[string][]byte) ([]byte, error) {
 	return data, nil
 }
 
-func executePythonScript(scriptPath string, inputPaths []string, outputPath string) error {
-	cmd := exec.Command("python3", append(append([]string{scriptPath}, inputPaths...), outputPath)...) //nolint: gosec
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
+func sendHTTPPostRequest(inputPaths map[string]string, outputPath string) error {
+	cfg, err := config.Load()
+	if err != nil {
+		return fmt.Errorf("error loading config: %w", err)
+	}
+
+	host := cfg.Python.Host
+	endpoint := cfg.Python.Endpoint
+	url := "http://" + host + "/" + endpoint
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	for direction, path := range inputPaths {
+		file, err := os.Open(path)
+		if err != nil {
+			return fmt.Errorf("failed to open file %s: %w", path, err)
+		}
+		defer file.Close()
+
+		part, err := writer.CreateFormFile(direction, filepath.Base(path))
+		if err != nil {
+			return fmt.Errorf("failed to create form file for %s: %w", path, err)
+		}
+		_, err = io.Copy(part, file)
+		if err != nil {
+			return fmt.Errorf("failed to copy file %s: %w", path, err)
+		}
+	}
+
+	err = writer.Close()
+	if err != nil {
+		return fmt.Errorf("failed to close writer: %w", err)
+	}
+
+	req, err := http.NewRequest("POST", url, body)
+	if err != nil {
+		return fmt.Errorf("failed to create new request: %w", err)
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	outFile, err := os.Create(outputPath)
+	if err != nil {
+		return fmt.Errorf("failed to create output file: %w", err)
+	}
+	defer outFile.Close()
+
+	_, err = io.Copy(outFile, resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to copy response body to output file: %w", err)
+	}
+
+	return nil
 }
+
+// func executePythonScript(scriptPath string, inputPaths []string, outputPath string) error {
+// 	cmd := exec.Command("python3", append(append([]string{scriptPath}, inputPaths...), outputPath)...) //nolint: gosec
+// 	cmd.Stdout = os.Stdout
+// 	cmd.Stderr = os.Stderr
+// 	return cmd.Run()
+// }
 
 func SaveToLocal(data []byte, filePath string) error {
 	err := os.WriteFile(filePath, data, 0600)

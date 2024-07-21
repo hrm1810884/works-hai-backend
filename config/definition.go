@@ -12,6 +12,7 @@ import (
 type Config struct {
 	Server   Server   `yaml:"server"`
 	Firebase Firebase `yaml:"firbase"`
+	Python   Python   `yaml:"python"`
 }
 
 type Server struct {
@@ -21,6 +22,11 @@ type Server struct {
 
 type Firebase struct {
 	Bucket string `yaml:"bucket"`
+}
+
+type Python struct {
+	Host     string `yaml:"host"`
+	Endpoint string `yaml:"endpoint"`
 }
 
 func Load() (*Config, error) {
