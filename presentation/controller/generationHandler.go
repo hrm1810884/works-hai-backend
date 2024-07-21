@@ -33,7 +33,7 @@ func (*HaiHandler) ImageGenerationPost(ctx context.Context, req *ogen.GeneratePo
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get drawing repository")}, err
 	}
 
-	generateService, err := service.NewGenerateDrawingService(userRepository, drawingRepository)
+	generateService, err := service.NewDrawingService(userRepository, drawingRepository)
 	if err != nil {
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get generate service")}, err
 	}
