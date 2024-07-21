@@ -38,7 +38,7 @@ func (u *InitUserUsecase) InitUser(posX int, posY int) (urls map[string]string, 
 		return nil, "", fmt.Errorf("failed to get url for get: %w", err)
 	}
 
-	urlForPost, err := u.urlService.GetSignedUrl(drawingName, "post")
+	urlForPost, err := u.urlService.GetSignedUrl(drawingName, "put")
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to get url for post: %w", err)
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func GenerateAIDrawing(drawingData map[string][]byte) ([]byte, error) {
-	inputPaths := []string{} //["top=hoge.png", "bottom=fuga.png"]
+	inputPaths := []string{} // ["top=hoge.png", "bottom=fuga.png"]
 
 	positions := map[string][]byte{
 		"top":    drawingData["top"],
@@ -41,7 +41,7 @@ func GenerateAIDrawing(drawingData map[string][]byte) ([]byte, error) {
 }
 
 func executePythonScript(scriptPath string, inputPaths []string, outputPath string) error {
-	cmd := exec.Command("python3", append(append([]string{scriptPath}, inputPaths...), outputPath)...)
+	cmd := exec.Command("python3", append(append([]string{scriptPath}, inputPaths...), outputPath)...) //nolint: gosec
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()

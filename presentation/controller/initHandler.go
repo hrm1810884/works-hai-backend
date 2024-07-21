@@ -40,14 +40,15 @@ func (h *HaiHandler) InitGet(ctx context.Context) (ogen.InitGetRes, error) {
 
 	var posX, posY int
 	latestUser, err := userRepository.FindLatest()
-	if err == nil {
+	switch {
+	case err == nil:
 		pos := latestUser.GetPosition()
 		posX = pos.GetX()
 		posY = pos.GetY()
-	} else if errors.Is(err, domain.ErrNoLatestUser) {
+	case errors.Is(err, domain.ErrNoLatestUser):
 		posX = 0
 		posY = 0
-	} else {
+	default:
 		return &ogen.InitGetBadRequest{Error: ogen.NewOptString("failed to get latest user")}, err
 	}
 

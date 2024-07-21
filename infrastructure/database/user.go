@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -129,7 +130,7 @@ func (ur *ImplUserRepository) FindLatest() (*user.User, error) {
 		Limit(1)
 
 	doc, err := query.Documents(ctx).Next()
-	if err == iterator.Done {
+	if errors.Is(err, iterator.Done) {
 		return nil, domain.ErrNoLatestUser
 	} else if err != nil {
 		return nil, fmt.Errorf("failed to get latest user: %w", err)

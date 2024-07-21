@@ -15,7 +15,7 @@ func NewGetSignedUrlService(drawingRepository repository.DrawingRepository) (*Ge
 }
 
 func (s *GetSignedUrlService) GetSignedUrl(drawingName string, method string) (string, error) {
-	presignedUrl, err := s.repository.GenerateSignedUrl(drawingName, 15, method)
+	presignedUrl, err := s.repository.GenerateSignedUrl(drawingName, method)
 	if err != nil {
 		return "", fmt.Errorf("error generating url: %w", err)
 	}

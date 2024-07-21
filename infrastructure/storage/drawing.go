@@ -31,7 +31,7 @@ func NewImplDrawingRepository(ctx context.Context) (*ImplDrawingRepository, erro
 	return &ImplDrawingRepository{Client: client}, nil
 }
 
-func (dr *ImplDrawingRepository) GenerateSignedUrl(drawingName string, expiry time.Duration, method string) (string, error) {
+func (dr *ImplDrawingRepository) GenerateSignedUrl(drawingName string, method string) (string, error) {
 	cfg, err := config.Load()
 	if err != nil {
 		return "", fmt.Errorf("error loading config: %w", err)
@@ -43,7 +43,7 @@ func (dr *ImplDrawingRepository) GenerateSignedUrl(drawingName string, expiry ti
 	opts := &cs.SignedURLOptions{
 		Scheme:  cs.SigningSchemeV4,
 		Method:  method,
-		Expires: time.Now().Add(expiry * time.Minute), // 有効期限
+		Expires: time.Now().Add(7 * 24 * time.Hour), // 有効期限
 	}
 
 	// 署名付きURLを生成
@@ -68,7 +68,7 @@ func (dr *ImplDrawingRepository) UploadDrawing(fileName string, fileData []byte)
 	bucketName := cfg.Firebase.Bucket
 	bucket, err := dr.Client.Bucket(bucketName)
 	if err != nil {
-		return "", fmt.Errorf("failed to get bucket: %v", err)
+		return "", fmt.Errorf("failed to get bucket: %w", err)
 	}
 
 	// ファイルのContentTypeを推測
@@ -80,15 +80,15 @@ func (dr *ImplDrawingRepository) UploadDrawing(fileName string, fileData []byte)
 	wc.CacheControl = "public, max-age=31536000" // 1年間キャッシュする
 
 	if _, err := wc.Write(fileData); err != nil {
-		return "", fmt.Errorf("failed to write image to Firebase Storage: %v", err)
+		return "", fmt.Errorf("failed to write image to Firebase Storage: %w", err)
 	}
 
 	if err := wc.Close(); err != nil {
-		return "", fmt.Errorf("failed to close writer: %v", err)
+		return "", fmt.Errorf("failed to close writer: %w", err)
 	}
 
 	// 署名付きURLの生成
-	signedURL, err := dr.GenerateSignedUrl(fileName, 15, "GET")
+	signedURL, err := dr.GenerateSignedUrl(fileName, "GET")
 	if err != nil {
 		return "", err
 	}
