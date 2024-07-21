@@ -112,8 +112,19 @@ func (s *GeneratePostReq) SetUserId(val string) {
 	s.UserId = val
 }
 
-// InitGetBadRequest is response for InitGet operation.
-type InitGetBadRequest struct{}
+type InitGetBadRequest struct {
+	Error OptString `json:"error"`
+}
+
+// GetError returns the value of Error.
+func (s *InitGetBadRequest) GetError() OptString {
+	return s.Error
+}
+
+// SetError sets the value of Error.
+func (s *InitGetBadRequest) SetError(val OptString) {
+	s.Error = val
+}
 
 func (*InitGetBadRequest) initGetRes() {}
 

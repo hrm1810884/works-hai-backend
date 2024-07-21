@@ -104,6 +104,14 @@ paths:
                                 }
                 "400":
                     description: Bad Request
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Invalid input data: user id is missing"
                 "500":
                     description: Internal Server Error - the server encountered an unexpected condition that prevented it from fulfilling the request.
                 default:
