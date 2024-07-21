@@ -12,7 +12,7 @@ import (
 	"github.com/hrm1810884/works-hai-backend/ogen"
 )
 
-func (h *HaiHandler) PresignedUrlsGet(ctx context.Context) (ogen.InitGetRes, error) {
+func (h *HaiHandler) InitGet(ctx context.Context) (ogen.InitGetRes, error) {
 	userRepository, err := database.NewImplUserRepository(ctx)
 	if err != nil {
 		return &ogen.InitGetBadRequest{Error: ogen.NewOptString("failed to get user repository")}, err

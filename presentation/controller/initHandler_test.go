@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGeneratePost(t *testing.T) {
+func TestInitGet(t *testing.T) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("failed to get current working directory: %v", err)
@@ -27,24 +27,23 @@ func TestGeneratePost(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	// テスト用のリクエストデータを作成
-	req := &ogen.GeneratePostReq{
-		UserId: "78479344-30ab-4f5f-8f1c-f10ba5064598",
-	}
-
-	// コントローラーのハンドラを作成
 	h := &controller.HaiHandler{}
 
-	// 実行
-	res, err := h.GeneratePost(ctx, req)
-	assert.NoError(t, err, "ImageGenerationPost failed")
+	res, err := h.InitGet(ctx)
+	assert.NoError(t, err, "InitGet failed")
 	assert.NotNil(t, res, "Response should not be nil")
 
-	// レスポンスの検証
 	switch v := res.(type) {
-	case *ogen.GeneratePostOK:
-		assert.NotEmpty(t, v.URL, "URL should not be empty")
-	case *ogen.GeneratePostBadRequest:
+	case *ogen.InitGetOK:
+		assert.NotEmpty(t, v.Result, "Result should not be empty")
+		assert.NotEmpty(t, v.Result.ID, "Id should not be empty")
+		assert.NotEmpty(t, v.Result.Urls, "Urls should not be empty")
+		assert.NotEmpty(t, v.Result.Urls.HumanDrawing, "human should not be empty")
+		t.Logf("HumanDrawing: %v", v.Result.Urls.HumanDrawing)
+		t.Logf("BottomDrawing: %v", v.Result.Urls.BottomDrawing)
+		t.Logf("RightDrawing: %v", v.Result.Urls.RightDrawing)
+		t.Logf("LeftDrawing: %v", v.Result.Urls.LeftDrawing)
+	case *ogen.InitGetBadRequest:
 		t.Errorf("expected success but got bad request: %s", v.Error.Value)
 	default:
 		t.Errorf("unexpected response type: %T", v)
