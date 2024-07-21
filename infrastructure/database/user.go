@@ -8,7 +8,9 @@ import (
 	"cloud.google.com/go/firestore"
 	"github.com/google/uuid"
 	"github.com/hrm1810884/works-hai-backend/config"
+	"github.com/hrm1810884/works-hai-backend/domain"
 	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
+	"google.golang.org/api/iterator"
 )
 
 type ImplUserRepository struct {
@@ -118,6 +120,28 @@ func (ur *ImplUserRepository) FindByPos(pos user.Position) (*user.User, error) {
 	}
 
 	return ConvertDataToUser(userData)
+}
+
+func (ur *ImplUserRepository) FindLatest() (*user.User, error) {
+	ctx := context.Background()
+	query := ur.Client.Collection("users").
+		OrderBy("UpdatedAt", firestore.Desc).
+		Limit(1)
+
+	doc, err := query.Documents(ctx).Next()
+	if err == iterator.Done {
+		return nil, domain.ErrNoLatestUser
+	} else if err != nil {
+		return nil, fmt.Errorf("failed to get latest user: %w", err)
+	}
+
+	userData := UserData{}
+	if err := doc.DataTo(&userData); err != nil {
+		return nil, fmt.Errorf("failed to convert Firestore document to UserData: %w", err)
+	}
+
+	return ConvertDataToUser(userData)
+
 }
 
 func (ur *ImplUserRepository) Update(user user.User) error {

@@ -76,19 +76,28 @@ paths:
                                     result:
                                         type: object
                                         properties:
-                                            humanDrawing:
+                                            id: 
                                                 type: string
-                                                description: "Presigned URL for human drawing upload."
-                                            topDrawing:
-                                                type: string
-                                            rightDrawing:
-                                                type: string
-                                            bottomDrawing:
-                                                type: string
-                                            leftDrawing:
-                                                type: string
+                                                description: "user id"
+                                            urls:
+                                                type: object
+                                                properties:
+                                                    humanDrawing:
+                                                        type: string
+                                                        description: "Presigned URL for human drawing upload."
+                                                    topDrawing:
+                                                        type: string
+                                                    rightDrawing:
+                                                        type: string
+                                                    bottomDrawing:
+                                                        type: string
+                                                    leftDrawing:
+                                                        type: string
+                                                required:
+                                                    - humanDrawing
                                         required:
-                                            - humanDrawing
+                                            - id
+                                            - urls
                                 required:
                                     - result
                             example:
@@ -104,6 +113,14 @@ paths:
                                 }
                 "400":
                     description: Bad Request
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Invalid input data: user id is missing"
                 "500":
                     description: Internal Server Error - the server encountered an unexpected condition that prevented it from fulfilling the request.
                 default:

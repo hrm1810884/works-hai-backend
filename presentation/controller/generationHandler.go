@@ -12,7 +12,7 @@ import (
 	"github.com/hrm1810884/works-hai-backend/ogen"
 )
 
-func (*HaiHandler) ImageGenerationPost(ctx context.Context, req *ogen.GeneratePostReq) (ogen.GeneratePostRes, error) {
+func (*HaiHandler) GeneratePost(ctx context.Context, req *ogen.GeneratePostReq) (ogen.GeneratePostRes, error) {
 	reqId, err := uuid.Parse(req.UserId)
 	if err != nil {
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("invalid request to convert to uuid")}, err
@@ -33,7 +33,7 @@ func (*HaiHandler) ImageGenerationPost(ctx context.Context, req *ogen.GeneratePo
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get drawing repository")}, err
 	}
 
-	generateService, err := service.NewGenerateDrawingService(userRepository, drawingRepository)
+	generateService, err := service.NewDrawingService(userRepository, drawingRepository)
 	if err != nil {
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get generate service")}, err
 	}
