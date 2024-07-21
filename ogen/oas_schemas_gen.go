@@ -150,6 +150,32 @@ func (s *InitGetOK) SetResult(val InitGetOKResult) {
 func (*InitGetOK) initGetRes() {}
 
 type InitGetOKResult struct {
+	// User id.
+	ID   string              `json:"id"`
+	Urls InitGetOKResultUrls `json:"urls"`
+}
+
+// GetID returns the value of ID.
+func (s *InitGetOKResult) GetID() string {
+	return s.ID
+}
+
+// GetUrls returns the value of Urls.
+func (s *InitGetOKResult) GetUrls() InitGetOKResultUrls {
+	return s.Urls
+}
+
+// SetID sets the value of ID.
+func (s *InitGetOKResult) SetID(val string) {
+	s.ID = val
+}
+
+// SetUrls sets the value of Urls.
+func (s *InitGetOKResult) SetUrls(val InitGetOKResultUrls) {
+	s.Urls = val
+}
+
+type InitGetOKResultUrls struct {
 	// Presigned URL for human drawing upload.
 	HumanDrawing  string    `json:"humanDrawing"`
 	TopDrawing    OptString `json:"topDrawing"`
@@ -159,52 +185,52 @@ type InitGetOKResult struct {
 }
 
 // GetHumanDrawing returns the value of HumanDrawing.
-func (s *InitGetOKResult) GetHumanDrawing() string {
+func (s *InitGetOKResultUrls) GetHumanDrawing() string {
 	return s.HumanDrawing
 }
 
 // GetTopDrawing returns the value of TopDrawing.
-func (s *InitGetOKResult) GetTopDrawing() OptString {
+func (s *InitGetOKResultUrls) GetTopDrawing() OptString {
 	return s.TopDrawing
 }
 
 // GetRightDrawing returns the value of RightDrawing.
-func (s *InitGetOKResult) GetRightDrawing() OptString {
+func (s *InitGetOKResultUrls) GetRightDrawing() OptString {
 	return s.RightDrawing
 }
 
 // GetBottomDrawing returns the value of BottomDrawing.
-func (s *InitGetOKResult) GetBottomDrawing() OptString {
+func (s *InitGetOKResultUrls) GetBottomDrawing() OptString {
 	return s.BottomDrawing
 }
 
 // GetLeftDrawing returns the value of LeftDrawing.
-func (s *InitGetOKResult) GetLeftDrawing() OptString {
+func (s *InitGetOKResultUrls) GetLeftDrawing() OptString {
 	return s.LeftDrawing
 }
 
 // SetHumanDrawing sets the value of HumanDrawing.
-func (s *InitGetOKResult) SetHumanDrawing(val string) {
+func (s *InitGetOKResultUrls) SetHumanDrawing(val string) {
 	s.HumanDrawing = val
 }
 
 // SetTopDrawing sets the value of TopDrawing.
-func (s *InitGetOKResult) SetTopDrawing(val OptString) {
+func (s *InitGetOKResultUrls) SetTopDrawing(val OptString) {
 	s.TopDrawing = val
 }
 
 // SetRightDrawing sets the value of RightDrawing.
-func (s *InitGetOKResult) SetRightDrawing(val OptString) {
+func (s *InitGetOKResultUrls) SetRightDrawing(val OptString) {
 	s.RightDrawing = val
 }
 
 // SetBottomDrawing sets the value of BottomDrawing.
-func (s *InitGetOKResult) SetBottomDrawing(val OptString) {
+func (s *InitGetOKResultUrls) SetBottomDrawing(val OptString) {
 	s.BottomDrawing = val
 }
 
 // SetLeftDrawing sets the value of LeftDrawing.
-func (s *InitGetOKResult) SetLeftDrawing(val OptString) {
+func (s *InitGetOKResultUrls) SetLeftDrawing(val OptString) {
 	s.LeftDrawing = val
 }
 

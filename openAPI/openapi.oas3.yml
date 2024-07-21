@@ -76,19 +76,28 @@ paths:
                                     result:
                                         type: object
                                         properties:
-                                            humanDrawing:
+                                            id: 
                                                 type: string
-                                                description: "Presigned URL for human drawing upload."
-                                            topDrawing:
-                                                type: string
-                                            rightDrawing:
-                                                type: string
-                                            bottomDrawing:
-                                                type: string
-                                            leftDrawing:
-                                                type: string
+                                                description: "user id"
+                                            urls:
+                                                type: object
+                                                properties:
+                                                    humanDrawing:
+                                                        type: string
+                                                        description: "Presigned URL for human drawing upload."
+                                                    topDrawing:
+                                                        type: string
+                                                    rightDrawing:
+                                                        type: string
+                                                    bottomDrawing:
+                                                        type: string
+                                                    leftDrawing:
+                                                        type: string
+                                                required:
+                                                    - humanDrawing
                                         required:
-                                            - humanDrawing
+                                            - id
+                                            - urls
                                 required:
                                     - result
                             example:
