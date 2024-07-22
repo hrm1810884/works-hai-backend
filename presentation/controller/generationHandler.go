@@ -7,7 +7,6 @@ import (
 	"github.com/hrm1810884/works-hai-backend/application/usecase"
 	"github.com/hrm1810884/works-hai-backend/application/usecase/service"
 	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
-	"github.com/hrm1810884/works-hai-backend/infrastructure/impl/database"
 	impl_repository "github.com/hrm1810884/works-hai-backend/infrastructure/repository"
 	"github.com/hrm1810884/works-hai-backend/ogen"
 )
@@ -23,7 +22,7 @@ func (*HaiHandler) GeneratePost(ctx context.Context, req *ogen.GeneratePostReq) 
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get userId")}, err
 	}
 
-	userRepository, err := database.NewImplUserRepository(ctx)
+	userRepository, err := impl_repository.NewImplUserRepository(ctx)
 	if err != nil {
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get user repository")}, err
 	}
