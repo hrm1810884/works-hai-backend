@@ -46,3 +46,7 @@ func (u *User) GetPosition() *Position {
 func (u *User) IsDrawn() bool {
 	return u.isDrawn
 }
+
+func (u *User) SetIsDrawnTrue() {
+	u.isDrawn = true
+}

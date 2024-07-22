@@ -29,6 +29,12 @@ func (u *GenerateDrawingUsecase) GenerateAIDrawing(userId user.UserId) (drawingU
 		return "", fmt.Errorf("not found user by id: %w", err)
 	}
 
+	userData.SetIsDrawnTrue()
+	err = u.userRepository.Update(*userData)
+	if err != nil {
+		return "", fmt.Errorf("failed to update is drawn: %w", err)
+	}
+
 	aiPosition, err := userData.GetPosition().GetNext()
 	if err != nil {
 		return "", fmt.Errorf("failed to get next ai position: %w", err)
