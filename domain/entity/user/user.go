@@ -6,15 +6,17 @@ type User struct {
 	userId    UserId
 	position  Position
 	url       string
+	isDrawn   bool
 	createdAt time.Time
 	updatedAt time.Time
 }
 
-func NewUser(userId UserId, position Position, url string, createdAt time.Time, updatedAt time.Time) *User {
+func NewUser(userId UserId, position Position, url string, isDrawn bool, createdAt time.Time, updatedAt time.Time) *User {
 	return &User{
 		userId:    userId,
 		position:  position,
 		url:       url,
+		isDrawn:   isDrawn,
 		createdAt: createdAt,
 		updatedAt: updatedAt,
 	}
@@ -39,4 +41,8 @@ func (u *User) GetUpdatedAt() time.Time {
 
 func (u *User) GetPosition() *Position {
 	return &u.position
+}
+
+func (u *User) IsDrawn() bool {
+	return u.isDrawn
 }
