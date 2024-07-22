@@ -1,4 +1,4 @@
-package database_test
+package impl_repository_test
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hrm1810884/works-hai-backend/config"
 	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
-	"github.com/hrm1810884/works-hai-backend/infrastructure/database"
+	impl_repository "github.com/hrm1810884/works-hai-backend/infrastructure/repository"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,7 +43,10 @@ func TestImplUserRepository_Integration(t *testing.T) {
 	}
 	defer client.Close()
 
-	userRepo := &database.ImplUserRepository{Client: client}
+	userRepo, err := impl_repository.NewImplUserRepository(ctx)
+	if err != nil {
+		t.Fatalf("failed to get user repo: %v", err)
+	}
 
 	// テストデータの作成
 	id := uuid.New()

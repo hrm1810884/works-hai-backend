@@ -30,7 +30,7 @@ func TestGeneratePost(t *testing.T) {
 
 	// テスト用のリクエストデータを作成
 	req := &ogen.GeneratePostReq{
-		UserId: "78479344-30ab-4f5f-8f1c-f10ba5064598",
+		UserId: "BCA1A426-08B4-4B0B-9769-4CD3669ED11A",
 	}
 
 	// コントローラーのハンドラを作成
