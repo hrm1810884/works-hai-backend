@@ -12,7 +12,7 @@ import (
 	"github.com/hrm1810884/works-hai-backend/config"
 )
 
-func GenerateAIDrawing(drawingData map[string][]byte) ([]byte, error) {
+func ImplGenerateAIDrawing(drawingData map[string][]byte) (data []byte, err error) {
 	inputPaths := map[string]string{}
 
 	positions := map[string][]byte{
@@ -35,11 +35,11 @@ func GenerateAIDrawing(drawingData map[string][]byte) ([]byte, error) {
 
 	outputPath := "image/out.png"
 
-	err := sendHTTPPostRequest(inputPaths, outputPath)
+	err = sendHTTPPostRequest(inputPaths, outputPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send HTTP POST request: %w", err)
 	}
-	data, err := ReadFromLocal(outputPath)
+	data, err = ReadFromLocal(outputPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read output of AI generation: %w", err)
 	}
