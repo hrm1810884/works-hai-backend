@@ -40,7 +40,14 @@ func (h *HaiHandler) InitGet(ctx context.Context) (ogen.InitGetRes, error) {
 	var posX, posY int
 	latestUser, err := userRepository.FindLatest()
 	switch {
-	case err == nil:
+	case err == nil && latestUser.IsDrawn():
+		pos, err := latestUser.GetPosition().GetNext()
+		if err != nil {
+			return &ogen.InitGetBadRequest{Error: ogen.NewOptString("failed to get next pos")}, err
+		}
+		posX = pos.GetX()
+		posY = pos.GetY()
+	case err == nil && !latestUser.IsDrawn():
 		pos := latestUser.GetPosition()
 		posX = pos.GetX()
 		posY = pos.GetY()

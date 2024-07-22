@@ -50,7 +50,7 @@ func (u *GenerateDrawingUsecase) GenerateAIDrawing(userId user.UserId) (drawingU
 	}
 
 	now := time.Now()
-	aiData := user.NewUser(*aiId, *aiPosition, drawingUrl, now, now)
+	aiData := user.NewUser(*aiId, *aiPosition, drawingUrl, true, now, now)
 	err = u.userRepository.Create(*aiData)
 	if err != nil {
 		return "", fmt.Errorf("failed to create ai data in db: %w", err)
