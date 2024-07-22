@@ -6,7 +6,6 @@ import (
 
 	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
 	"github.com/hrm1810884/works-hai-backend/domain/repository"
-	"github.com/hrm1810884/works-hai-backend/infrastructure/scripts"
 )
 
 type DrawingService struct {
@@ -72,7 +71,7 @@ func (s *DrawingService) GenerateDrawing(aiPosition *user.Position) ([]byte, err
 		return nil, err
 	}
 
-	data, err := scripts.GenerateAIDrawing(drawingData)
+	data, err := s.drawingRepository.GenerateAIDrawing(drawingData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate drawing: %w", err)
 	}
