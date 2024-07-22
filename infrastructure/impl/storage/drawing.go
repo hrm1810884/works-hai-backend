@@ -14,24 +14,7 @@ import (
 	"github.com/hrm1810884/works-hai-backend/config"
 )
 
-type ImplDrawingRepository struct {
-	Client *storage.Client
-}
-
-func NewImplDrawingRepository(ctx context.Context) (*ImplDrawingRepository, error) {
-	app, err := config.InitializeApp()
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize Firebase app: %w", err)
-	}
-	client, err := app.Storage(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize Firebase Storage client: %w", err)
-	}
-
-	return &ImplDrawingRepository{Client: client}, nil
-}
-
-func (dr *ImplDrawingRepository) GenerateSignedUrl(drawingName string, method string) (string, error) {
+func ImplGenerateSignedUrl(client *storage.Client, fileName string, method string) (string, error) {
 	cfg, err := config.Load()
 	if err != nil {
 		return "", fmt.Errorf("error loading config: %w", err)
@@ -47,12 +30,12 @@ func (dr *ImplDrawingRepository) GenerateSignedUrl(drawingName string, method st
 	}
 
 	// 署名付きURLを生成
-	bucket, err := dr.Client.Bucket(bucketName)
+	bucket, err := client.Bucket(bucketName)
 	if err != nil {
 		return "", err
 	}
 
-	url, err := bucket.SignedURL(drawingName, opts)
+	url, err := bucket.SignedURL(fileName, opts)
 	if err != nil {
 		return "", fmt.Errorf("Bucket(%q).SignedURL: %w", bucketName, err)
 	}
@@ -60,15 +43,15 @@ func (dr *ImplDrawingRepository) GenerateSignedUrl(drawingName string, method st
 	return url, nil
 }
 
-func (dr *ImplDrawingRepository) UploadDrawing(fileName string, fileData []byte) (string, error) {
+func ImplUploadDrawing(client *storage.Client, fileName string, fileData []byte) error {
 	cfg, err := config.Load()
 	if err != nil {
-		return "", fmt.Errorf("error loading config: %w", err)
+		return fmt.Errorf("error loading config: %w", err)
 	}
 	bucketName := cfg.Firebase.Bucket
-	bucket, err := dr.Client.Bucket(bucketName)
+	bucket, err := client.Bucket(bucketName)
 	if err != nil {
-		return "", fmt.Errorf("failed to get bucket: %w", err)
+		return fmt.Errorf("failed to get bucket: %w", err)
 	}
 
 	// ファイルのContentTypeを推測
@@ -80,23 +63,17 @@ func (dr *ImplDrawingRepository) UploadDrawing(fileName string, fileData []byte)
 	wc.CacheControl = "public, max-age=31536000" // 1年間キャッシュする
 
 	if _, err := wc.Write(fileData); err != nil {
-		return "", fmt.Errorf("failed to write image to Firebase Storage: %w", err)
+		return fmt.Errorf("failed to write image to Firebase Storage: %w", err)
 	}
 
 	if err := wc.Close(); err != nil {
-		return "", fmt.Errorf("failed to close writer: %w", err)
+		return fmt.Errorf("failed to close writer: %w", err)
 	}
 
-	// 署名付きURLの生成
-	signedURL, err := dr.GenerateSignedUrl(fileName, "GET")
-	if err != nil {
-		return "", err
-	}
-
-	return signedURL, nil
+	return nil
 }
 
-func (dr *ImplDrawingRepository) DownloadDrawing(url string) (data []byte, err error) {
+func ImplDownloadDrawing(url string) (data []byte, err error) {
 	validUrl, err := validateURL(url)
 	if err != nil {
 		// Handle the error appropriately
