@@ -110,7 +110,7 @@ func ConvertDataToUser(data database.UserData) (*user.User, error) {
 	}
 
 	position := user.NewPosition(data.PosX, data.PosY)
-	user := user.NewUser(*userId, *position, data.Url, data.CreatedAt, data.UpdatedAt)
+	user := user.NewUser(*userId, *position, data.Url, data.IsDrawn, data.CreatedAt, data.UpdatedAt)
 	return user, nil
 }
 
@@ -121,6 +121,7 @@ func ConvertUserToData(user user.User) *database.UserData {
 		PosX:      user.GetPosition().GetX(),
 		PosY:      user.GetPosition().GetY(),
 		Url:       user.GetUrl(),
+		IsDrawn:   user.IsDrawn(),
 		CreatedAt: user.GetCreatedAt(),
 		UpdatedAt: now,
 	}

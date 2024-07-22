@@ -20,6 +20,7 @@ type UserData struct {
 	PosX      int
 	PosY      int
 	Url       string
+	IsDrawn   bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

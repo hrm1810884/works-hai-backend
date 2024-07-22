@@ -58,6 +58,7 @@ func TestImplUserRepository_Integration(t *testing.T) {
 		*userId,
 		*user.NewPosition(0, 0),
 		"hogehoge",
+		false,
 		time.Now(),
 		time.Now(),
 	)
