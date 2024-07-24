@@ -30,6 +30,18 @@ func enableCORS(next http.Handler) http.Handler {
 	})
 }
 
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		log.Printf("Received request: %s %s %s", r.Method, r.RequestURI, r.RemoteAddr)
+
+		next.ServeHTTP(w, r)
+
+		duration := time.Since(start)
+		log.Printf("Handled request: %s %s %s in %v", r.Method, r.RequestURI, r.RemoteAddr, duration)
+	})
+}
+
 func main() {
 	// サーバーの初期設定
 	hdl, err := ogen.NewServer(
@@ -52,7 +64,7 @@ func main() {
 	// サーバーの設定
 	srv := &http.Server{
 		Addr:        cfg.Server.Dev,
-		Handler:     enableCORS(hdl),
+		Handler:     enableCORS(loggingMiddleware(hdl)),
 		ReadTimeout: 30 * time.Second,
 	}
 
