@@ -2,12 +2,14 @@ package impl_repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/google/uuid"
 	"github.com/hrm1810884/works-hai-backend/config"
+	"github.com/hrm1810884/works-hai-backend/domain"
 	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
 	"github.com/hrm1810884/works-hai-backend/infrastructure/impl/database"
 )
@@ -73,6 +75,38 @@ func (ur *ImplUserRepository) FindLatest() (*user.User, error) {
 	}
 
 	return ConvertDataToUser(*userData)
+}
+
+func (ur *ImplUserRepository) GetLatestArray() ([]user.User, error) {
+	ctx := context.Background()
+
+	targetPosition := user.NewPosition(0, 0)
+	var userArray []user.User
+
+	for {
+		targetX := targetPosition.GetX()
+		targetY := targetPosition.GetY()
+		latestData, err := database.FindByPos(ur.Client, ctx, targetX, targetY)
+
+		if errors.Is(err, domain.ErrNoLatestUser) || !latestData.IsDrawn {
+			break
+		} else if err != nil {
+			return nil, err
+		}
+
+		latestUser, err := ConvertDataToUser(*latestData)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert latest data by pos (%d, %d) : %w", targetX, targetY, err)
+		}
+		userArray = append(userArray, *latestUser)
+
+		targetPosition, err = targetPosition.GetNext()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next of pos (%d, %d) : %w", targetX, targetY, err)
+		}
+	}
+
+	return userArray, nil
 }
 
 func (ur *ImplUserRepository) Update(user user.User) error {
