@@ -28,27 +28,19 @@ func TestViewHandler(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	// テスト用のリクエストデータを作成
-	req := &ogen.ViewGetReq{
-		Position: ogen.ViewGetReqPosition{
-			X: 0,
-			Y: 0,
-		},
-	}
-
 	// コントローラーのハンドラを作成
 	h := &controller.HaiHandler{}
 
 	// 実行
-	res, err := h.ViewGet(ctx, req)
+	res, err := h.ViewGet(ctx)
 	assert.NoError(t, err, "ImageGenerationPost failed")
 	assert.NotNil(t, res, "Response should not be nil")
 
 	// レスポンスの検証
 	switch v := res.(type) {
 	case *ogen.ViewGetOK:
-		println("%s", v.Result.URL)
-		assert.NotEmpty(t, v.Result.URL, "URL should not be empty")
+		t.Logf("%d", len(v.Result))
+		assert.NotEmpty(t, v.Result[0].URL, "URL should not be empty")
 	case *ogen.ViewGetBadRequest:
 		t.Errorf("expected success but got bad request: %s", v.Error.Value)
 	default:

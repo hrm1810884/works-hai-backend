@@ -2,18 +2,13 @@ package controller
 
 import (
 	"context"
-	"errors"
 
 	"github.com/hrm1810884/works-hai-backend/application/usecase"
-	"github.com/hrm1810884/works-hai-backend/domain"
 	impl_repository "github.com/hrm1810884/works-hai-backend/infrastructure/repository"
 	"github.com/hrm1810884/works-hai-backend/ogen"
 )
 
-func (h *HaiHandler) ViewGet(ctx context.Context, req *ogen.ViewGetReq) (ogen.ViewGetRes, error) {
-	posX := req.Position.X
-	posY := req.Position.Y
-
+func (h *HaiHandler) ViewGet(ctx context.Context) (ogen.ViewGetRes, error) {
 	userRepository, err := impl_repository.NewImplUserRepository(ctx)
 	if err != nil {
 		return &ogen.ViewGetBadRequest{Error: ogen.NewOptString("failed to get user repository")}, err
@@ -24,20 +19,22 @@ func (h *HaiHandler) ViewGet(ctx context.Context, req *ogen.ViewGetReq) (ogen.Vi
 		return &ogen.ViewGetBadRequest{Error: ogen.NewOptString("failed to get usecase")}, err
 	}
 
-	url, err := viewerUsecase.GetViewData(posX, posY)
-	switch {
-	case errors.Is(err, domain.ErrNoLatestUser):
-		{
-			return &ogen.ViewGetNotFound{Error: ogen.NewOptString("no need to update")}, err
-		}
-	case err != nil:
-		{
-			return &ogen.ViewGetBadRequest{Error: ogen.NewOptString("failed to get viewer data")}, err
-		}
-	default:
-		{
-			return &ogen.ViewGetOK{Result: ogen.ViewGetOKResult{Position: ogen.ViewGetOKResultPosition{X: posX, Y: posY}, URL: url}}, nil
-		}
+	arr, err := viewerUsecase.GetViewData()
+	if err != nil {
+		return &ogen.ViewGetBadRequest{Error: ogen.NewOptString("failed to get view data")}, err
 	}
 
+	var resArr []ogen.ViewGetOKResultItem
+	for i := 0; i < len(arr); i++ {
+		resItem := &ogen.ViewGetOKResultItem{
+			Position: ogen.ViewGetOKResultItemPosition{
+				X: arr[i].GetPosition().GetX(),
+				Y: arr[i].GetPosition().GetY(),
+			},
+			URL: arr[i].GetUrl(),
+		}
+		resArr = append(resArr, *resItem)
+	}
+
+	return &ogen.ViewGetOK{Result: resArr}, nil
 }
