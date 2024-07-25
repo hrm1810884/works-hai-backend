@@ -144,11 +144,11 @@ paths:
                                     type: object
                                     properties:
                                         x:
-                                            type: number
+                                            type: integer
                                             description: target of x position
                                             example: 0
                                         y:
-                                            type: number
+                                            type: integer
                                             description: target of y position
                                             example: 0
                                     required:
@@ -171,11 +171,11 @@ paths:
                                                 type: object
                                                 properties:
                                                     x:
-                                                        type: number
+                                                        type: integer
                                                         description: target of x position
                                                         example: 0
                                                     y:
-                                                        type: number
+                                                        type: integer
                                                         description: target of y position
                                                         example: 0
                                                 required:
@@ -190,16 +190,11 @@ paths:
                                 required:
                                     - result
                             example:
-                                {
-                                    result:
-                                        {
-                                            position: {
-                                                x: 0,
-                                                y: 0,
-                                            },
-                                            url :  "https://storage.googleapis.com/...",
-                                        },
-                                }
+                                result:
+                                    position:
+                                        x: 0
+                                        y: 0
+                                    url: "https://storage.googleapis.com/..."
                 "400":
                     description: Bad Request
                     content:
@@ -210,8 +205,20 @@ paths:
                                     error:
                                         type: string
                                         example: "Invalid input data"
+                "404":
+                    description: Not Found - No drawing found for the specified position.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: "A detailed error message."
+                                example:
+                                    error: "No drawing found for the specified position."
                 "500":
-                    description: Internal Server Error - the server encountered an unexpected condition that prevented it from fulfilling the request.
+                    description: Internal Server Error - The server encountered an unexpected condition that prevented it from fulfilling the request.
                 default:
                     description: Unexpected error
                     content:
@@ -222,6 +229,7 @@ paths:
                                     error:
                                         type: string
                                         description: "A detailed error message."
+
 components:
     securitySchemes:
         ApiKeyAuth:

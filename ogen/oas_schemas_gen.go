@@ -301,6 +301,23 @@ type ViewGetInternalServerError struct{}
 
 func (*ViewGetInternalServerError) viewGetRes() {}
 
+type ViewGetNotFound struct {
+	// A detailed error message.
+	Error OptString `json:"error"`
+}
+
+// GetError returns the value of Error.
+func (s *ViewGetNotFound) GetError() OptString {
+	return s.Error
+}
+
+// SetError sets the value of Error.
+func (s *ViewGetNotFound) SetError(val OptString) {
+	s.Error = val
+}
+
+func (*ViewGetNotFound) viewGetRes() {}
+
 type ViewGetOK struct {
 	Result ViewGetOKResult `json:"result"`
 }
@@ -345,28 +362,28 @@ func (s *ViewGetOKResult) SetURL(val string) {
 
 type ViewGetOKResultPosition struct {
 	// Target of x position.
-	X float64 `json:"x"`
+	X int `json:"x"`
 	// Target of y position.
-	Y float64 `json:"y"`
+	Y int `json:"y"`
 }
 
 // GetX returns the value of X.
-func (s *ViewGetOKResultPosition) GetX() float64 {
+func (s *ViewGetOKResultPosition) GetX() int {
 	return s.X
 }
 
 // GetY returns the value of Y.
-func (s *ViewGetOKResultPosition) GetY() float64 {
+func (s *ViewGetOKResultPosition) GetY() int {
 	return s.Y
 }
 
 // SetX sets the value of X.
-func (s *ViewGetOKResultPosition) SetX(val float64) {
+func (s *ViewGetOKResultPosition) SetX(val int) {
 	s.X = val
 }
 
 // SetY sets the value of Y.
-func (s *ViewGetOKResultPosition) SetY(val float64) {
+func (s *ViewGetOKResultPosition) SetY(val int) {
 	s.Y = val
 }
 
@@ -386,27 +403,27 @@ func (s *ViewGetReq) SetPosition(val ViewGetReqPosition) {
 
 type ViewGetReqPosition struct {
 	// Target of x position.
-	X float64 `json:"x"`
+	X int `json:"x"`
 	// Target of y position.
-	Y float64 `json:"y"`
+	Y int `json:"y"`
 }
 
 // GetX returns the value of X.
-func (s *ViewGetReqPosition) GetX() float64 {
+func (s *ViewGetReqPosition) GetX() int {
 	return s.X
 }
 
 // GetY returns the value of Y.
-func (s *ViewGetReqPosition) GetY() float64 {
+func (s *ViewGetReqPosition) GetY() int {
 	return s.Y
 }
 
 // SetX sets the value of X.
-func (s *ViewGetReqPosition) SetX(val float64) {
+func (s *ViewGetReqPosition) SetX(val int) {
 	s.X = val
 }
 
 // SetY sets the value of Y.
-func (s *ViewGetReqPosition) SetY(val float64) {
+func (s *ViewGetReqPosition) SetY(val int) {
 	s.Y = val
 }
