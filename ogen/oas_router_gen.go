@@ -102,6 +102,27 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
+			case 'v': // Prefix: "view"
+				origElem := elem
+				if l := len("view"); len(elem) >= l && elem[0:l] == "view" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "GET":
+						s.handleViewGetRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "GET")
+					}
+
+					return
+				}
+
+				elem = origElem
 			}
 
 			elem = origElem
@@ -238,6 +259,31 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.summary = "Get presigned urls"
 						r.operationID = ""
 						r.pathPattern = "/init"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+
+				elem = origElem
+			case 'v': // Prefix: "view"
+				origElem := elem
+				if l := len("view"); len(elem) >= l && elem[0:l] == "view" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch method {
+					case "GET":
+						r.name = "ViewGet"
+						r.summary = "Drawing Viewer Page"
+						r.operationID = ""
+						r.pathPattern = "/view"
 						r.args = args
 						r.count = 0
 						return r, true

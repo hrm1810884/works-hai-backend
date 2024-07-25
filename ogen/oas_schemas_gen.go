@@ -279,3 +279,110 @@ func (o OptString) Or(d string) string {
 	}
 	return d
 }
+
+type ViewGetBadRequest struct {
+	Error OptString `json:"error"`
+}
+
+// GetError returns the value of Error.
+func (s *ViewGetBadRequest) GetError() OptString {
+	return s.Error
+}
+
+// SetError sets the value of Error.
+func (s *ViewGetBadRequest) SetError(val OptString) {
+	s.Error = val
+}
+
+func (*ViewGetBadRequest) viewGetRes() {}
+
+// ViewGetInternalServerError is response for ViewGet operation.
+type ViewGetInternalServerError struct{}
+
+func (*ViewGetInternalServerError) viewGetRes() {}
+
+type ViewGetNotFound struct {
+	// A detailed error message.
+	Error OptString `json:"error"`
+}
+
+// GetError returns the value of Error.
+func (s *ViewGetNotFound) GetError() OptString {
+	return s.Error
+}
+
+// SetError sets the value of Error.
+func (s *ViewGetNotFound) SetError(val OptString) {
+	s.Error = val
+}
+
+func (*ViewGetNotFound) viewGetRes() {}
+
+type ViewGetOK struct {
+	Result []ViewGetOKResultItem `json:"result"`
+}
+
+// GetResult returns the value of Result.
+func (s *ViewGetOK) GetResult() []ViewGetOKResultItem {
+	return s.Result
+}
+
+// SetResult sets the value of Result.
+func (s *ViewGetOK) SetResult(val []ViewGetOKResultItem) {
+	s.Result = val
+}
+
+func (*ViewGetOK) viewGetRes() {}
+
+type ViewGetOKResultItem struct {
+	Position ViewGetOKResultItemPosition `json:"position"`
+	// Presigned URL for target position.
+	URL string `json:"url"`
+}
+
+// GetPosition returns the value of Position.
+func (s *ViewGetOKResultItem) GetPosition() ViewGetOKResultItemPosition {
+	return s.Position
+}
+
+// GetURL returns the value of URL.
+func (s *ViewGetOKResultItem) GetURL() string {
+	return s.URL
+}
+
+// SetPosition sets the value of Position.
+func (s *ViewGetOKResultItem) SetPosition(val ViewGetOKResultItemPosition) {
+	s.Position = val
+}
+
+// SetURL sets the value of URL.
+func (s *ViewGetOKResultItem) SetURL(val string) {
+	s.URL = val
+}
+
+type ViewGetOKResultItemPosition struct {
+	// Target of x position.
+	X int `json:"x"`
+	// Target of y position.
+	Y int `json:"y"`
+}
+
+// GetX returns the value of X.
+func (s *ViewGetOKResultItemPosition) GetX() int {
+	return s.X
+}
+
+// GetY returns the value of Y.
+func (s *ViewGetOKResultItemPosition) GetY() int {
+	return s.Y
+}
+
+// SetX sets the value of X.
+func (s *ViewGetOKResultItemPosition) SetX(val int) {
+	s.X = val
+}
+
+// SetY sets the value of Y.
+func (s *ViewGetOKResultItemPosition) SetY(val int) {
+	s.Y = val
+}

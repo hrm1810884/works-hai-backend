@@ -34,6 +34,12 @@ type Invoker interface {
 	//
 	// GET /init
 	InitGet(ctx context.Context) (InitGetRes, error)
+	// ViewGet invokes GET /view operation.
+	//
+	// Viewer Page for human AI drawings.
+	//
+	// GET /view
+	ViewGet(ctx context.Context) (ViewGetRes, error)
 }
 
 // Client implements OAS client.
@@ -294,6 +300,110 @@ func (c *Client) sendInitGet(ctx context.Context) (res InitGetRes, err error) {
 
 	stage = "DecodeResponse"
 	result, err := decodeInitGetResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// ViewGet invokes GET /view operation.
+//
+// Viewer Page for human AI drawings.
+//
+// GET /view
+func (c *Client) ViewGet(ctx context.Context) (ViewGetRes, error) {
+	res, err := c.sendViewGet(ctx)
+	return res, err
+}
+
+func (c *Client) sendViewGet(ctx context.Context) (res ViewGetRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/view"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "ViewGet",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/view"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:ApiKeyAuth"
+			switch err := c.securityApiKeyAuth(ctx, "ViewGet", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"ApiKeyAuth\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeViewGetResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

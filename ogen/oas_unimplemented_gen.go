@@ -31,6 +31,15 @@ func (UnimplementedHandler) InitGet(ctx context.Context) (r InitGetRes, _ error)
 	return r, ht.ErrNotImplemented
 }
 
+// ViewGet implements GET /view operation.
+//
+// Viewer Page for human AI drawings.
+//
+// GET /view
+func (UnimplementedHandler) ViewGet(ctx context.Context) (r ViewGetRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // NewError creates *ErrRespStatusCode from error returned by handler.
 //
 // Used for common default response.

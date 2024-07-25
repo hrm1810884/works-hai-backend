@@ -61,7 +61,9 @@ func FindByPos(client *firestore.Client, ctx context.Context, posX int, posY int
 		Limit(1)
 
 	doc, err := query.Documents(ctx).Next()
-	if err != nil {
+	if errors.Is(err, iterator.Done) {
+		return nil, domain.ErrNoLatestUser
+	} else if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
@@ -91,7 +93,6 @@ func FindLatest(client *firestore.Client, ctx context.Context) (*UserData, error
 	}
 
 	return &userData, err
-
 }
 
 func Update(client *firestore.Client, ctx context.Context, user UserData) error {
