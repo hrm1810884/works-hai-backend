@@ -1,7 +1,8 @@
 package usecase
 
 import (
-	"github.com/hrm1810884/works-hai-backend/domain"
+	"fmt"
+
 	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
 	"github.com/hrm1810884/works-hai-backend/domain/repository"
 )
@@ -14,17 +15,15 @@ func NewGetViewDataUsecase(repository repository.UserRepository) (*GetViewDataUs
 	return &GetViewDataUsecase{repository}, nil
 }
 
-func (u *GetViewDataUsecase) GetViewData(posX, posY int) (string, error) {
-	targetPosition := user.NewPosition(posX, posY)
-	user, err := u.repository.FindByPos(*targetPosition)
+func (u *GetViewDataUsecase) GetViewData() ([]user.User, error) {
+	arr, err := u.repository.GetLatestArray()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	if !user.IsDrawn() {
-		return "", domain.ErrNoLatestUser
+	if len(arr) == 0 {
+		return nil, fmt.Errorf("no data as latest array")
 	}
 
-	url := user.GetUrl()
-	return url, nil
+	return arr, nil
 }
