@@ -132,30 +132,7 @@ paths:
     /view:
         get:
             summary: Drawing Viewer Page
-            description: Viewer Page for human AI drawings.
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                position:
-                                    type: object
-                                    properties:
-                                        x:
-                                            type: integer
-                                            description: target of x position
-                                            example: 0
-                                        y:
-                                            type: integer
-                                            description: target of y position
-                                            example: 0
-                                    required:
-                                        - x
-                                        - y
-                            required:
-                                - position
+            description: Viewer Page for human AI drawings. 
             responses:
                 "200":
                     description: Drawings were successfully fetched.
@@ -165,36 +142,51 @@ paths:
                                 type: object
                                 properties:
                                     result:
-                                        type: object
-                                        properties:
-                                            position:
-                                                type: object
-                                                properties:
-                                                    x:
-                                                        type: integer
-                                                        description: target of x position
-                                                        example: 0
-                                                    y:
-                                                        type: integer
-                                                        description: target of y position
-                                                        example: 0
-                                                required:
-                                                    - x
-                                                    - y
-                                            url:
-                                                type: string
-                                                description: "Presigned URL for target position."
-                                        required:
-                                            - position
-                                            - url
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                position:
+                                                    type: object
+                                                    properties:
+                                                        x:
+                                                            type: integer
+                                                            description: target of x position
+                                                            example: 0
+                                                        y:
+                                                            type: integer
+                                                            description: target of y position
+                                                            example: 0
+                                                    required:
+                                                        - x
+                                                        - y
+                                                url:
+                                                    type: string
+                                                    description: "Presigned URL for target position."
+                                            required:
+                                                - position
+                                                - url
                                 required:
                                     - result
+
                             example:
-                                result:
-                                    position:
-                                        x: 0
-                                        y: 0
-                                    url: "https://storage.googleapis.com/..."
+                                result: [
+                                    {
+                                        position: {
+                                            x: 0,
+                                            y: 0
+                                        },
+                                        url: "https://storage.googleapis.com/..."
+                                    },
+                                    {
+                                        position: {
+                                            x: 0,
+                                            y: -1
+                                        },
+                                        url: "https://storage.googleapis.com/..."
+                                    }
+                                
+                                ]
                 "400":
                     description: Bad Request
                     content:

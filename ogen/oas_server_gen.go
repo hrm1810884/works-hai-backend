@@ -25,7 +25,7 @@ type Handler interface {
 	// Viewer Page for human AI drawings.
 	//
 	// GET /view
-	ViewGet(ctx context.Context, req *ViewGetReq) (ViewGetRes, error)
+	ViewGet(ctx context.Context) (ViewGetRes, error)
 	// NewError creates *ErrRespStatusCode from error returned by handler.
 	//
 	// Used for common default response.

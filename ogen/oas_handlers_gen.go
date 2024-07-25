@@ -433,21 +433,6 @@ func (s *Server) handleViewGetRequest(args [0]string, argsEscaped bool, w http.R
 			return
 		}
 	}
-	request, close, err := s.decodeViewGetRequest(r)
-	if err != nil {
-		err = &ogenerrors.DecodeRequestError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		defer recordError("DecodeRequest", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	defer func() {
-		if err := close(); err != nil {
-			recordError("CloseRequest", err)
-		}
-	}()
 
 	var response ViewGetRes
 	if m := s.cfg.Middleware; m != nil {
@@ -456,13 +441,13 @@ func (s *Server) handleViewGetRequest(args [0]string, argsEscaped bool, w http.R
 			OperationName:    "ViewGet",
 			OperationSummary: "Drawing Viewer Page",
 			OperationID:      "",
-			Body:             request,
+			Body:             nil,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
 
 		type (
-			Request  = *ViewGetReq
+			Request  = struct{}
 			Params   = struct{}
 			Response = ViewGetRes
 		)
@@ -475,12 +460,12 @@ func (s *Server) handleViewGetRequest(args [0]string, argsEscaped bool, w http.R
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ViewGet(ctx, request)
+				response, err = s.h.ViewGet(ctx)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.ViewGet(ctx, request)
+		response, err = s.h.ViewGet(ctx)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrRespStatusCode](err); ok {

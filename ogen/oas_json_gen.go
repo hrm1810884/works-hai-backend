@@ -934,7 +934,11 @@ func (s *ViewGetOK) Encode(e *jx.Encoder) {
 func (s *ViewGetOK) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("result")
-		s.Result.Encode(e)
+		e.ArrStart()
+		for _, elem := range s.Result {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
 	}
 }
 
@@ -954,7 +958,15 @@ func (s *ViewGetOK) Decode(d *jx.Decoder) error {
 		case "result":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.Result.Decode(d); err != nil {
+				s.Result = make([]ViewGetOKResultItem, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem ViewGetOKResultItem
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Result = append(s.Result, elem)
+					return nil
+				}); err != nil {
 					return err
 				}
 				return nil
@@ -1018,14 +1030,14 @@ func (s *ViewGetOK) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *ViewGetOKResult) Encode(e *jx.Encoder) {
+func (s *ViewGetOKResultItem) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *ViewGetOKResult) encodeFields(e *jx.Encoder) {
+func (s *ViewGetOKResultItem) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("position")
 		s.Position.Encode(e)
@@ -1036,15 +1048,15 @@ func (s *ViewGetOKResult) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfViewGetOKResult = [2]string{
+var jsonFieldsNameOfViewGetOKResultItem = [2]string{
 	0: "position",
 	1: "url",
 }
 
-// Decode decodes ViewGetOKResult from json.
-func (s *ViewGetOKResult) Decode(d *jx.Decoder) error {
+// Decode decodes ViewGetOKResultItem from json.
+func (s *ViewGetOKResultItem) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode ViewGetOKResult to nil")
+		return errors.New("invalid: unable to decode ViewGetOKResultItem to nil")
 	}
 	var requiredBitSet [1]uint8
 
@@ -1077,7 +1089,7 @@ func (s *ViewGetOKResult) Decode(d *jx.Decoder) error {
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode ViewGetOKResult")
+		return errors.Wrap(err, "decode ViewGetOKResultItem")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
@@ -1094,8 +1106,8 @@ func (s *ViewGetOKResult) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfViewGetOKResult) {
-					name = jsonFieldsNameOfViewGetOKResult[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfViewGetOKResultItem) {
+					name = jsonFieldsNameOfViewGetOKResultItem[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -1116,27 +1128,27 @@ func (s *ViewGetOKResult) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *ViewGetOKResult) MarshalJSON() ([]byte, error) {
+func (s *ViewGetOKResultItem) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *ViewGetOKResult) UnmarshalJSON(data []byte) error {
+func (s *ViewGetOKResultItem) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
 
 // Encode implements json.Marshaler.
-func (s *ViewGetOKResultPosition) Encode(e *jx.Encoder) {
+func (s *ViewGetOKResultItemPosition) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *ViewGetOKResultPosition) encodeFields(e *jx.Encoder) {
+func (s *ViewGetOKResultItemPosition) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("x")
 		e.Int(s.X)
@@ -1147,15 +1159,15 @@ func (s *ViewGetOKResultPosition) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfViewGetOKResultPosition = [2]string{
+var jsonFieldsNameOfViewGetOKResultItemPosition = [2]string{
 	0: "x",
 	1: "y",
 }
 
-// Decode decodes ViewGetOKResultPosition from json.
-func (s *ViewGetOKResultPosition) Decode(d *jx.Decoder) error {
+// Decode decodes ViewGetOKResultItemPosition from json.
+func (s *ViewGetOKResultItemPosition) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode ViewGetOKResultPosition to nil")
+		return errors.New("invalid: unable to decode ViewGetOKResultItemPosition to nil")
 	}
 	var requiredBitSet [1]uint8
 
@@ -1190,7 +1202,7 @@ func (s *ViewGetOKResultPosition) Decode(d *jx.Decoder) error {
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode ViewGetOKResultPosition")
+		return errors.Wrap(err, "decode ViewGetOKResultItemPosition")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
@@ -1207,8 +1219,8 @@ func (s *ViewGetOKResultPosition) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfViewGetOKResultPosition) {
-					name = jsonFieldsNameOfViewGetOKResultPosition[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfViewGetOKResultItemPosition) {
+					name = jsonFieldsNameOfViewGetOKResultItemPosition[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -1229,221 +1241,14 @@ func (s *ViewGetOKResultPosition) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *ViewGetOKResultPosition) MarshalJSON() ([]byte, error) {
+func (s *ViewGetOKResultItemPosition) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *ViewGetOKResultPosition) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s *ViewGetReq) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields encodes fields.
-func (s *ViewGetReq) encodeFields(e *jx.Encoder) {
-	{
-		e.FieldStart("position")
-		s.Position.Encode(e)
-	}
-}
-
-var jsonFieldsNameOfViewGetReq = [1]string{
-	0: "position",
-}
-
-// Decode decodes ViewGetReq from json.
-func (s *ViewGetReq) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode ViewGetReq to nil")
-	}
-	var requiredBitSet [1]uint8
-
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		case "position":
-			requiredBitSet[0] |= 1 << 0
-			if err := func() error {
-				if err := s.Position.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"position\"")
-			}
-		default:
-			return d.Skip()
-		}
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode ViewGetReq")
-	}
-	// Validate required fields.
-	var failures []validate.FieldError
-	for i, mask := range [1]uint8{
-		0b00000001,
-	} {
-		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
-			// Mask only required fields and check equality to mask using XOR.
-			//
-			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
-			// Bits of fields which would be set are actually bits of missed fields.
-			missed := bits.OnesCount8(result)
-			for bitN := 0; bitN < missed; bitN++ {
-				bitIdx := bits.TrailingZeros8(result)
-				fieldIdx := i*8 + bitIdx
-				var name string
-				if fieldIdx < len(jsonFieldsNameOfViewGetReq) {
-					name = jsonFieldsNameOfViewGetReq[fieldIdx]
-				} else {
-					name = strconv.Itoa(fieldIdx)
-				}
-				failures = append(failures, validate.FieldError{
-					Name:  name,
-					Error: validate.ErrFieldRequired,
-				})
-				// Reset bit.
-				result &^= 1 << bitIdx
-			}
-		}
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *ViewGetReq) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *ViewGetReq) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s *ViewGetReqPosition) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields encodes fields.
-func (s *ViewGetReqPosition) encodeFields(e *jx.Encoder) {
-	{
-		e.FieldStart("x")
-		e.Int(s.X)
-	}
-	{
-		e.FieldStart("y")
-		e.Int(s.Y)
-	}
-}
-
-var jsonFieldsNameOfViewGetReqPosition = [2]string{
-	0: "x",
-	1: "y",
-}
-
-// Decode decodes ViewGetReqPosition from json.
-func (s *ViewGetReqPosition) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode ViewGetReqPosition to nil")
-	}
-	var requiredBitSet [1]uint8
-
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		case "x":
-			requiredBitSet[0] |= 1 << 0
-			if err := func() error {
-				v, err := d.Int()
-				s.X = int(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"x\"")
-			}
-		case "y":
-			requiredBitSet[0] |= 1 << 1
-			if err := func() error {
-				v, err := d.Int()
-				s.Y = int(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"y\"")
-			}
-		default:
-			return d.Skip()
-		}
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode ViewGetReqPosition")
-	}
-	// Validate required fields.
-	var failures []validate.FieldError
-	for i, mask := range [1]uint8{
-		0b00000011,
-	} {
-		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
-			// Mask only required fields and check equality to mask using XOR.
-			//
-			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
-			// Bits of fields which would be set are actually bits of missed fields.
-			missed := bits.OnesCount8(result)
-			for bitN := 0; bitN < missed; bitN++ {
-				bitIdx := bits.TrailingZeros8(result)
-				fieldIdx := i*8 + bitIdx
-				var name string
-				if fieldIdx < len(jsonFieldsNameOfViewGetReqPosition) {
-					name = jsonFieldsNameOfViewGetReqPosition[fieldIdx]
-				} else {
-					name = strconv.Itoa(fieldIdx)
-				}
-				failures = append(failures, validate.FieldError{
-					Name:  name,
-					Error: validate.ErrFieldRequired,
-				})
-				// Reset bit.
-				result &^= 1 << bitIdx
-			}
-		}
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *ViewGetReqPosition) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *ViewGetReqPosition) UnmarshalJSON(data []byte) error {
+func (s *ViewGetOKResultItemPosition) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

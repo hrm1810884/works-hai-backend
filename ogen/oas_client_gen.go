@@ -39,7 +39,7 @@ type Invoker interface {
 	// Viewer Page for human AI drawings.
 	//
 	// GET /view
-	ViewGet(ctx context.Context, request *ViewGetReq) (ViewGetRes, error)
+	ViewGet(ctx context.Context) (ViewGetRes, error)
 }
 
 // Client implements OAS client.
@@ -312,12 +312,12 @@ func (c *Client) sendInitGet(ctx context.Context) (res InitGetRes, err error) {
 // Viewer Page for human AI drawings.
 //
 // GET /view
-func (c *Client) ViewGet(ctx context.Context, request *ViewGetReq) (ViewGetRes, error) {
-	res, err := c.sendViewGet(ctx, request)
+func (c *Client) ViewGet(ctx context.Context) (ViewGetRes, error) {
+	res, err := c.sendViewGet(ctx)
 	return res, err
 }
 
-func (c *Client) sendViewGet(ctx context.Context, request *ViewGetReq) (res ViewGetRes, err error) {
+func (c *Client) sendViewGet(ctx context.Context) (res ViewGetRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		semconv.HTTPMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/view"),
@@ -360,9 +360,6 @@ func (c *Client) sendViewGet(ctx context.Context, request *ViewGetReq) (res View
 	r, err := ht.NewRequest(ctx, "GET", u)
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
-	}
-	if err := encodeViewGetRequest(request, r); err != nil {
-		return res, errors.Wrap(err, "encode request")
 	}
 
 	{

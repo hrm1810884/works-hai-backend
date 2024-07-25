@@ -36,7 +36,7 @@ func (UnimplementedHandler) InitGet(ctx context.Context) (r InitGetRes, _ error)
 // Viewer Page for human AI drawings.
 //
 // GET /view
-func (UnimplementedHandler) ViewGet(ctx context.Context, req *ViewGetReq) (r ViewGetRes, _ error) {
+func (UnimplementedHandler) ViewGet(ctx context.Context) (r ViewGetRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
