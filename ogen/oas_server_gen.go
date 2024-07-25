@@ -20,6 +20,12 @@ type Handler interface {
 	//
 	// GET /init
 	InitGet(ctx context.Context) (InitGetRes, error)
+	// ViewGet implements GET /view operation.
+	//
+	// Viewer Page for human AI drawings.
+	//
+	// GET /view
+	ViewGet(ctx context.Context, req *ViewGetReq) (ViewGetRes, error)
 	// NewError creates *ErrRespStatusCode from error returned by handler.
 	//
 	// Used for common default response.

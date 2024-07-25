@@ -8,3 +8,7 @@ type GeneratePostRes interface {
 type InitGetRes interface {
 	initGetRes()
 }
+
+type ViewGetRes interface {
+	viewGetRes()
+}
