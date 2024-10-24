@@ -9,6 +9,10 @@ type InitGetRes interface {
 	initGetRes()
 }
 
+type RebaseDatabaseGetRes interface {
+	rebaseDatabaseGetRes()
+}
+
 type ViewGetRes interface {
 	viewGetRes()
 }

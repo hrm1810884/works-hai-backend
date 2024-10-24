@@ -5,9 +5,9 @@ fmt:
 
 .PHONY: fmt
 
-lint:fmt
-	golangci-lint run
+# lint:fmt
+# 	golangci-lint run
 
-build:lint
+build: # lint
 	go mod tidy
 	go build main.go

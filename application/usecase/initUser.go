@@ -58,5 +58,6 @@ func (u *InitUserUsecase) InitUser(posX int, posY int) (urls map[string]string, 
 		"left":   quadUrls["left"],
 	}
 
+	// return signed-url which enables uploading human drawing in front end
 	return urls, userId.ToId(), nil
 }

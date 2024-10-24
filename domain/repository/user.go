@@ -12,4 +12,5 @@ type UserRepository interface {
 	GetLatestArray() ([]user.User, error)
 	Update(user user.User) error
 	Delete(userId user.UserId) error
+	DeleteImagesExceptCenter() (error)
 }

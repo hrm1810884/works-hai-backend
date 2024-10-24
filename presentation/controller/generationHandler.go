@@ -6,18 +6,20 @@ import (
 	"github.com/google/uuid"
 	"github.com/hrm1810884/works-hai-backend/application/usecase"
 	"github.com/hrm1810884/works-hai-backend/application/usecase/service"
-	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
+	user "github.com/hrm1810884/works-hai-backend/domain/entity/user"
 	impl_repository "github.com/hrm1810884/works-hai-backend/infrastructure/repository"
-	"github.com/hrm1810884/works-hai-backend/ogen"
+	ogen "github.com/hrm1810884/works-hai-backend/ogen"
 )
 
 func (*HaiHandler) GeneratePost(ctx context.Context, req *ogen.GeneratePostReq) (ogen.GeneratePostRes, error) {
-	reqId, err := uuid.Parse(req.UserId)
+	// get UUID from userId in the request
+	userId, err := uuid.Parse(req.UserId)
 	if err != nil {
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("invalid request to convert to uuid")}, err
 	}
 
-	userId, err := user.NewUserId(reqId)
+	// instantiate UserId.
+	userIdObj, err := user.NewUserId(userId)
 	if err != nil {
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get userId")}, err
 	}
@@ -47,7 +49,9 @@ func (*HaiHandler) GeneratePost(ctx context.Context, req *ogen.GeneratePostReq) 
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get usecase")}, err
 	}
 
-	url, err := generateUsecase.GenerateAIDrawing(*userId)
+	// Upload of human drawing is already done on front-end.
+	// This method call only handles generating image. 
+	url, err := generateUsecase.GenerateAIDrawing(*userIdObj)
 	if err != nil {
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to generate image...")}, err
 	}

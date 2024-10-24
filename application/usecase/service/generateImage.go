@@ -4,8 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
-	"github.com/hrm1810884/works-hai-backend/domain/repository"
+	user "github.com/hrm1810884/works-hai-backend/domain/entity/user"
+	repository "github.com/hrm1810884/works-hai-backend/domain/repository"
+	impl_repository "github.com/hrm1810884/works-hai-backend/infrastructure/repository"
 )
 
 type DrawingService struct {
@@ -13,7 +14,10 @@ type DrawingService struct {
 	drawingRepository repository.DrawingRepository
 }
 
-func NewDrawingService(userRepository repository.UserRepository, drawingRepository repository.DrawingRepository) (*DrawingService, error) {
+func NewDrawingService(implUserRepository *impl_repository.ImplUserRepository, implDrawingRepository *impl_repository.ImplDrawingRepository) (*DrawingService, error) {
+	var userRepository = repository.UserRepository(implUserRepository);
+	var drawingRepository = repository.DrawingRepository(implDrawingRepository);
+
 	return &DrawingService{userRepository, drawingRepository}, nil
 }
 

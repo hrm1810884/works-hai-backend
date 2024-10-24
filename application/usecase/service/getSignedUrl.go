@@ -3,14 +3,16 @@ package service
 import (
 	"fmt"
 
-	"github.com/hrm1810884/works-hai-backend/domain/repository"
+	repository "github.com/hrm1810884/works-hai-backend/domain/repository"
+	impl_repository "github.com/hrm1810884/works-hai-backend/infrastructure/repository"
 )
 
 type GetSignedUrlService struct {
 	repository repository.DrawingRepository
 }
 
-func NewGetSignedUrlService(drawingRepository repository.DrawingRepository) (*GetSignedUrlService, error) {
+func NewGetSignedUrlService(implDrawingRepository *impl_repository.ImplDrawingRepository) (*GetSignedUrlService, error) {
+	drawingRepository := repository.DrawingRepository(implDrawingRepository)
 	return &GetSignedUrlService{repository: drawingRepository}, nil
 }
 

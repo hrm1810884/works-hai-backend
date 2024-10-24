@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hrm1810884/works-hai-backend/application/usecase/service"
 	"github.com/hrm1810884/works-hai-backend/domain/entity/user"
-	"github.com/hrm1810884/works-hai-backend/domain/repository"
+	repository "github.com/hrm1810884/works-hai-backend/domain/repository"
 )
 
 type GenerateDrawingUsecase struct {
@@ -23,14 +23,15 @@ func NewGenerateDrawingUsecase(ur repository.UserRepository, dr repository.Drawi
 	}, nil
 }
 
-func (u *GenerateDrawingUsecase) GenerateAIDrawing(userId user.UserId) (drawingUrl string, err error) {
-	userData, err := u.userRepository.FindById(userId)
+func (usecase *GenerateDrawingUsecase) GenerateAIDrawing(userId user.UserId) (drawingUrl string, err error) {
+	// find user data by userId
+	userData, err := usecase.userRepository.FindById(userId)
 	if err != nil {
 		return "", fmt.Errorf("not found user by id: %w", err)
 	}
 
 	userData.SetIsDrawnTrue()
-	err = u.userRepository.Update(*userData)
+	err = usecase.userRepository.Update(*userData)
 	if err != nil {
 		return "", fmt.Errorf("failed to update is drawn: %w", err)
 	}
@@ -40,7 +41,7 @@ func (u *GenerateDrawingUsecase) GenerateAIDrawing(userId user.UserId) (drawingU
 		return "", fmt.Errorf("failed to get next ai position: %w", err)
 	}
 
-	generatedDrawing, err := u.generateService.GenerateDrawing(aiPosition)
+	generatedDrawing, err := usecase.generateService.GenerateDrawing(aiPosition)
 	if err != nil {
 		return "", fmt.Errorf("failed to generate drawing: %w", err)
 	}
@@ -50,14 +51,14 @@ func (u *GenerateDrawingUsecase) GenerateAIDrawing(userId user.UserId) (drawingU
 		return "", fmt.Errorf("failed to get userId for ai generation: %w", err)
 	}
 
-	drawingUrl, err = u.drawingRepository.UploadDrawing(aiId.GetDrawingName(), generatedDrawing)
+	drawingUrl, err = usecase.drawingRepository.UploadDrawing(aiId.GetDrawingName(), generatedDrawing)
 	if err != nil {
 		return "", fmt.Errorf("failed to upload ai drawing:%w", err)
 	}
 
 	now := time.Now()
 	aiData := user.NewUser(*aiId, *aiPosition, drawingUrl, true, now, now)
-	err = u.userRepository.Create(*aiData)
+	err = usecase.userRepository.Create(*aiData)
 	if err != nil {
 		return "", fmt.Errorf("failed to create ai data in db: %w", err)
 	}

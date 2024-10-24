@@ -221,6 +221,61 @@ paths:
                                     error:
                                         type: string
                                         description: "A detailed error message."
+    /rebase-database:
+        get:
+            summary: rebase database
+            description: refresh position informations to clear data apparently
+            responses:
+                "200":
+                    description: Drawings were successfully fetched.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                required:
+                                    - success
+
+                            example:
+                                success: true
+
+                "400":
+                    description: Bad Request
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Invalid input data"
+                "404":
+                    description: Not Found - No drawing found for the specified position.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: "A detailed error message."
+                                example:
+                                    error: "No drawing found for the specified position."
+                "500":
+                    description: Internal Server Error - The server encountered an unexpected condition that prevented it from fulfilling the request.
+                default:
+                    description: Unexpected error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: "A detailed error message."
 
 components:
     securitySchemes:

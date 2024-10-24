@@ -132,6 +132,37 @@ func (ur *ImplUserRepository) Delete(userId user.UserId) error {
 	return nil
 }
 
+func (ur *ImplUserRepository) DeleteImagesExceptCenter() (error) {
+	ctx := context.Background()
+	allUserData, err := database.GetAll(ur.Client, ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, userData := range allUserData {
+
+		fmt.Printf("%s\n", userData.UserId);
+		if userData.PosX != 0 || userData.PosY != 0 {
+			userId, err := uuid.Parse(userData.UserId)
+			if err != nil {
+				return fmt.Errorf("failed to convert id to uuid: %w", err)
+			}
+
+			userIdObj, err := user.NewUserId(userId)
+			if err != nil {
+				return fmt.Errorf("failed to instantiate UserId from userId: %w", err)
+			}
+
+			err = ur.Delete(*userIdObj);
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+
+	return nil
+}
+
 func ConvertDataToUser(data database.UserData) (*user.User, error) {
 	id, err := uuid.Parse(data.UserId)
 	if err != nil {

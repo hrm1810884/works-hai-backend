@@ -280,6 +280,60 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
+type RebaseDatabaseGetBadRequest struct {
+	Error OptString `json:"error"`
+}
+
+// GetError returns the value of Error.
+func (s *RebaseDatabaseGetBadRequest) GetError() OptString {
+	return s.Error
+}
+
+// SetError sets the value of Error.
+func (s *RebaseDatabaseGetBadRequest) SetError(val OptString) {
+	s.Error = val
+}
+
+func (*RebaseDatabaseGetBadRequest) rebaseDatabaseGetRes() {}
+
+// RebaseDatabaseGetInternalServerError is response for RebaseDatabaseGet operation.
+type RebaseDatabaseGetInternalServerError struct{}
+
+func (*RebaseDatabaseGetInternalServerError) rebaseDatabaseGetRes() {}
+
+type RebaseDatabaseGetNotFound struct {
+	// A detailed error message.
+	Error OptString `json:"error"`
+}
+
+// GetError returns the value of Error.
+func (s *RebaseDatabaseGetNotFound) GetError() OptString {
+	return s.Error
+}
+
+// SetError sets the value of Error.
+func (s *RebaseDatabaseGetNotFound) SetError(val OptString) {
+	s.Error = val
+}
+
+func (*RebaseDatabaseGetNotFound) rebaseDatabaseGetRes() {}
+
+type RebaseDatabaseGetOK struct {
+	Success bool `json:"success"`
+}
+
+// GetSuccess returns the value of Success.
+func (s *RebaseDatabaseGetOK) GetSuccess() bool {
+	return s.Success
+}
+
+// SetSuccess sets the value of Success.
+func (s *RebaseDatabaseGetOK) SetSuccess(val bool) {
+	s.Success = val
+}
+
+func (*RebaseDatabaseGetOK) rebaseDatabaseGetRes() {}
+
 type ViewGetBadRequest struct {
 	Error OptString `json:"error"`
 }

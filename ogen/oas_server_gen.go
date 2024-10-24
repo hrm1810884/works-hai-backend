@@ -20,6 +20,12 @@ type Handler interface {
 	//
 	// GET /init
 	InitGet(ctx context.Context) (InitGetRes, error)
+	// RebaseDatabaseGet implements GET /rebase-database operation.
+	//
+	// Refresh position informations to clear data apparently.
+	//
+	// GET /rebase-database
+	RebaseDatabaseGet(ctx context.Context) (RebaseDatabaseGetRes, error)
 	// ViewGet implements GET /view operation.
 	//
 	// Viewer Page for human AI drawings.

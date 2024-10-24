@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"cloud.google.com/go/firestore"
-	"github.com/hrm1810884/works-hai-backend/domain"
+	firestore "cloud.google.com/go/firestore"
+	domain "github.com/hrm1810884/works-hai-backend/domain"
 	"google.golang.org/api/iterator"
 )
 
@@ -73,6 +73,26 @@ func FindByPos(client *firestore.Client, ctx context.Context, posX int, posY int
 	}
 
 	return &userData, nil
+}
+
+func GetAll(client *firestore.Client, ctx context.Context) ([]UserData, error) {
+	query := client.Collection("users")
+	docs, err := query.Documents(ctx).GetAll()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all the users: %w", err)
+	}
+
+	var allUserData []UserData
+	for _, doc := range docs {
+		userData := UserData{}
+		err = doc.DataTo(&userData);
+		if err != nil {
+			return nil, fmt.Errorf("failed to get user: %w", err)
+		}
+		allUserData = append(allUserData, userData)
+	}
+
+	return allUserData, nil
 }
 
 func FindLatest(client *firestore.Client, ctx context.Context) (*UserData, error) {

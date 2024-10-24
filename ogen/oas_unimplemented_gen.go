@@ -31,6 +31,15 @@ func (UnimplementedHandler) InitGet(ctx context.Context) (r InitGetRes, _ error)
 	return r, ht.ErrNotImplemented
 }
 
+// RebaseDatabaseGet implements GET /rebase-database operation.
+//
+// Refresh position informations to clear data apparently.
+//
+// GET /rebase-database
+func (UnimplementedHandler) RebaseDatabaseGet(ctx context.Context) (r RebaseDatabaseGetRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // ViewGet implements GET /view operation.
 //
 // Viewer Page for human AI drawings.
