@@ -129,6 +129,33 @@ paths:
                                     error:
                                         type: string
                                         description: "A detailed error message."
+    /reboot:
+        post:
+            summary: Reboot System
+            description: Create Next History in DB
+            responses:
+                "200":
+                    description: Rebooted Successfully
+                "400":
+                    description: Invalid request - the request could not be understood due to malformed syntax or invalid data.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Invalid input data: user id is missing"
+                default:
+                    description: Unexpected error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        description: "A detailed error message."
     /view:
         get:
             summary: Drawing Viewer Page

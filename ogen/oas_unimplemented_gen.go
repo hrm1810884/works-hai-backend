@@ -31,6 +31,15 @@ func (UnimplementedHandler) InitGet(ctx context.Context) (r InitGetRes, _ error)
 	return r, ht.ErrNotImplemented
 }
 
+// RebootPost implements POST /reboot operation.
+//
+// Create Next History in DB.
+//
+// POST /reboot
+func (UnimplementedHandler) RebootPost(ctx context.Context) (r RebootPostRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // ViewGet implements GET /view operation.
 //
 // Viewer Page for human AI drawings.

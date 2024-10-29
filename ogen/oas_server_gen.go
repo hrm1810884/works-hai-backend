@@ -20,6 +20,12 @@ type Handler interface {
 	//
 	// GET /init
 	InitGet(ctx context.Context) (InitGetRes, error)
+	// RebootPost implements POST /reboot operation.
+	//
+	// Create Next History in DB.
+	//
+	// POST /reboot
+	RebootPost(ctx context.Context) (RebootPostRes, error)
 	// ViewGet implements GET /view operation.
 	//
 	// Viewer Page for human AI drawings.

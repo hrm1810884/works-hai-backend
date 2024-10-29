@@ -102,6 +102,27 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
+			case 'r': // Prefix: "reboot"
+				origElem := elem
+				if l := len("reboot"); len(elem) >= l && elem[0:l] == "reboot" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "POST":
+						s.handleRebootPostRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "POST")
+					}
+
+					return
+				}
+
+				elem = origElem
 			case 'v': // Prefix: "view"
 				origElem := elem
 				if l := len("view"); len(elem) >= l && elem[0:l] == "view" {
@@ -259,6 +280,31 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.summary = "Get presigned urls"
 						r.operationID = ""
 						r.pathPattern = "/init"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+
+				elem = origElem
+			case 'r': // Prefix: "reboot"
+				origElem := elem
+				if l := len("reboot"); len(elem) >= l && elem[0:l] == "reboot" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch method {
+					case "POST":
+						r.name = "RebootPost"
+						r.summary = "Reboot System"
+						r.operationID = ""
+						r.pathPattern = "/reboot"
 						r.args = args
 						r.count = 0
 						return r, true

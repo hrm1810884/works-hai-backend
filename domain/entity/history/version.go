@@ -1,5 +1,7 @@
 package history
 
+import "strconv"
+
 type Version struct {
 	Version int
 }
@@ -15,7 +17,7 @@ func (v *Version) GetVersion() int {
 }
 
 func (v *Version) CreateId() string {
-	return string(rune(v.GetVersion()))
+	return strconv.Itoa(v.GetVersion())
 }
 
 func (v *Version) GetNextVersion() *Version {
