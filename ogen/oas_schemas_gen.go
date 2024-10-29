@@ -280,6 +280,27 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
+type RebootPostBadRequest struct {
+	Error OptString `json:"error"`
+}
+
+// GetError returns the value of Error.
+func (s *RebootPostBadRequest) GetError() OptString {
+	return s.Error
+}
+
+// SetError sets the value of Error.
+func (s *RebootPostBadRequest) SetError(val OptString) {
+	s.Error = val
+}
+
+func (*RebootPostBadRequest) rebootPostRes() {}
+
+// RebootPostOK is response for RebootPost operation.
+type RebootPostOK struct{}
+
+func (*RebootPostOK) rebootPostRes() {}
+
 type ViewGetBadRequest struct {
 	Error OptString `json:"error"`
 }

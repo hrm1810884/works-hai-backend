@@ -9,6 +9,10 @@ type InitGetRes interface {
 	initGetRes()
 }
 
+type RebootPostRes interface {
+	rebootPostRes()
+}
+
 type ViewGetRes interface {
 	viewGetRes()
 }
