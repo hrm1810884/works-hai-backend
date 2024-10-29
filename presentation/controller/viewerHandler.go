@@ -9,7 +9,17 @@ import (
 )
 
 func (h *HaiHandler) ViewGet(ctx context.Context) (ogen.ViewGetRes, error) {
-	userRepository, err := impl_repository.NewImplUserRepository(ctx)
+	historyRepository, err := impl_repository.NewImplHistoryRepository(ctx)
+	if err != nil {
+		return &ogen.ViewGetBadRequest{Error: ogen.NewOptString("failed to get history repository")}, err
+	}
+
+	currentHistory, err := historyRepository.FindLatest()
+	if err != nil {
+		return &ogen.ViewGetBadRequest{Error: ogen.NewOptString("failed to get current history")}, err
+	}
+
+	userRepository, err := impl_repository.NewImplUserRepository(ctx, currentHistory.GetHistoryId())
 	if err != nil {
 		return &ogen.ViewGetBadRequest{Error: ogen.NewOptString("failed to get user repository")}, err
 	}
