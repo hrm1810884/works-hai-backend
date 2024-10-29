@@ -43,7 +43,8 @@ func TestImplUserRepository_Integration(t *testing.T) {
 	}
 	defer client.Close()
 
-	userRepo, err := impl_repository.NewImplUserRepository(ctx)
+	testHistoryId := "0"
+	userRepo, err := impl_repository.NewImplUserRepository(ctx, testHistoryId)
 	if err != nil {
 		t.Fatalf("failed to get user repo: %v", err)
 	}
@@ -63,19 +64,18 @@ func TestImplUserRepository_Integration(t *testing.T) {
 		time.Now(),
 	)
 
-	testHistoryId := "0"
 	// Createのテスト
-	err = userRepo.Create(testHistoryId, *userData)
+	err = userRepo.Create(*userData)
 	assert.NoError(t, err, "failed to create user")
 
 	// FindByIdのテスト
-	foundUser, err := userRepo.FindById(testHistoryId, *userData.GetId())
+	foundUser, err := userRepo.FindById(*userData.GetId())
 	assert.NoError(t, err, "failed to find user by id")
 	assert.Equal(t, userData.GetId().ToId(), foundUser.GetId().ToId(), "user id does not match")
 	assert.Equal(t, userData.GetPosition().GetX(), foundUser.GetPosition().GetX(), "position X does not match")
 	assert.Equal(t, userData.GetPosition().GetY(), foundUser.GetPosition().GetY(), "position Y does not match")
 
-	foundUser, err = userRepo.FindById(testHistoryId, *userData.GetId())
+	foundUser, err = userRepo.FindById(*userData.GetId())
 	assert.NoError(t, err, "failed to find user by id after update")
 	assert.Equal(t, userData.GetPosition().GetX(), foundUser.GetPosition().GetX(), "updated position X does not match")
 	assert.Equal(t, userData.GetPosition().GetY(), foundUser.GetPosition().GetY(), "updated position Y does not match")

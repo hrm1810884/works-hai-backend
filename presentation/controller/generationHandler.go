@@ -17,12 +17,22 @@ func (*HaiHandler) GeneratePost(ctx context.Context, req *ogen.GeneratePostReq) 
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("invalid request to convert to uuid")}, err
 	}
 
+	historyRepository, err := impl_repository.NewImplHistoryRepository(ctx)
+	if err != nil {
+		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get history repository")}, err
+	}
+
+	currentHistory, err := historyRepository.FindLatest()
+	if err != nil {
+		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get current history")}, err
+	}
+
 	userId, err := user.NewUserId(reqId)
 	if err != nil {
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get userId")}, err
 	}
 
-	userRepository, err := impl_repository.NewImplUserRepository(ctx)
+	userRepository, err := impl_repository.NewImplUserRepository(ctx, currentHistory.GetHistoryId())
 	if err != nil {
 		return &ogen.GeneratePostBadRequest{Error: ogen.NewOptString("failed to get user repository")}, err
 	}
