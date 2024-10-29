@@ -21,12 +21,13 @@ type UserData struct {
 	PosY      int
 	Url       string
 	IsDrawn   bool
+	Version   int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
-func Create(client *firestore.Client, ctx context.Context, user UserData) error {
-	_, err := client.Collection("users").Doc(user.UserId).Set(ctx, user)
+func CreateUser(client *firestore.Client, ctx context.Context, historyId string, user UserData) error {
+	_, err := client.Collection("history").Doc(historyId).Collection("users").Doc(user.UserId).Set(ctx, user)
 	if err != nil {
 		return fmt.Errorf("failed to add user to Firestore: %w", err)
 	}
@@ -34,8 +35,8 @@ func Create(client *firestore.Client, ctx context.Context, user UserData) error 
 	return nil
 }
 
-func FindById(client *firestore.Client, ctx context.Context, userId string) (*UserData, error) {
-	query := client.Collection("users").
+func FindById(client *firestore.Client, ctx context.Context, historyId string, userId string) (*UserData, error) {
+	query := client.Collection("history").Doc(historyId).Collection("users").
 		Where("UserId", "==", userId).
 		OrderBy("UpdatedAt", firestore.Desc).
 		Limit(1)
@@ -53,8 +54,8 @@ func FindById(client *firestore.Client, ctx context.Context, userId string) (*Us
 	return &userData, nil
 }
 
-func FindByPos(client *firestore.Client, ctx context.Context, posX int, posY int) (*UserData, error) {
-	query := client.Collection("users").
+func FindByPos(client *firestore.Client, ctx context.Context, historyId string, posX int, posY int) (*UserData, error) {
+	query := client.Collection("history").Doc(historyId).Collection("users").
 		Where("PosX", "==", posX).
 		Where("PosY", "==", posY).
 		OrderBy("UpdatedAt", firestore.Desc).
@@ -75,8 +76,8 @@ func FindByPos(client *firestore.Client, ctx context.Context, posX int, posY int
 	return &userData, nil
 }
 
-func FindLatest(client *firestore.Client, ctx context.Context) (*UserData, error) {
-	query := client.Collection("users").
+func FindLatest(client *firestore.Client, ctx context.Context, historyId string) (*UserData, error) {
+	query := client.Collection("history").Doc(historyId).Collection("users").
 		OrderBy("UpdatedAt", firestore.Desc).
 		Limit(1)
 
@@ -95,8 +96,8 @@ func FindLatest(client *firestore.Client, ctx context.Context) (*UserData, error
 	return &userData, err
 }
 
-func Update(client *firestore.Client, ctx context.Context, user UserData) error {
-	_, err := client.Collection("users").Doc(user.UserId).Set(ctx, user)
+func Update(client *firestore.Client, ctx context.Context, historyId string, user UserData) error {
+	_, err := client.Collection("history").Doc(historyId).Collection("users").Doc(user.UserId).Set(ctx, user)
 	if err != nil {
 		return fmt.Errorf("failed to update user in Firestore: %w", err)
 	}
@@ -104,8 +105,8 @@ func Update(client *firestore.Client, ctx context.Context, user UserData) error 
 	return nil
 }
 
-func Delete(client *firestore.Client, ctx context.Context, userId string) error {
-	_, err := client.Collection("users").Doc(userId).Delete(ctx)
+func Delete(client *firestore.Client, ctx context.Context, historyId string, userId string) error {
+	_, err := client.Collection("history").Doc(historyId).Collection("users").Doc(userId).Delete(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to delete user from Firestore: %w", err)
 	}

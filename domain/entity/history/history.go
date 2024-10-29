@@ -1,29 +1,22 @@
 package history
 
-import "github.com/hrm1810884/works-hai-backend/domain/entity/user"
-
 type History struct {
-	HistoryId int
-	Version   int
-	Data      user.User
+	HistoryId string
+	Version   Version
 }
 
-func NewHistory(historyId int, version int, data user.User) *History {
+func NewHistory(version int) *History {
+	createdVersion := NewVersion(version)
 	return &History{
-		HistoryId: historyId,
-		Version:   version,
-		Data:      data,
+		HistoryId: createdVersion.CreateId(),
+		Version:   *createdVersion,
 	}
 }
 
-func (h *History) GetHistoryId() int {
+func (h *History) GetHistoryId() string {
 	return h.HistoryId
 }
 
 func (h *History) GetVersion() int {
-	return h.Version
-}
-
-func (h *History) GetData() *user.User {
-	return &h.Data
+	return h.Version.GetVersion()
 }
