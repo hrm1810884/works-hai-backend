@@ -15,3 +15,15 @@ func NewHistory(historyId int, version int, data user.User) *History {
 		Data:      data,
 	}
 }
+
+func (h *History) GetHistoryId() int {
+	return h.HistoryId
+}
+
+func (h *History) GetVersion() int {
+	return h.Version
+}
+
+func (h *History) GetData() *user.User {
+	return &h.Data
+}
