@@ -32,11 +32,11 @@ func NewImplUserRepository(ctx context.Context) (*ImplUserRepository, error) {
 	return &ImplUserRepository{Client: client}, nil
 }
 
-func (ur *ImplUserRepository) Create(user user.User) error {
+func (ur *ImplUserRepository) Create(historyId string, user user.User) error {
 	ctx := context.Background()
 	userData := ConvertUserToData(user)
 
-	err := database.Create(ur.Client, ctx, *userData)
+	err := database.CreateUser(ur.Client, ctx, historyId, *userData)
 	if err != nil {
 		return err
 	}
@@ -44,10 +44,10 @@ func (ur *ImplUserRepository) Create(user user.User) error {
 	return nil
 }
 
-func (ur *ImplUserRepository) FindById(userId user.UserId) (*user.User, error) {
+func (ur *ImplUserRepository) FindById(historyId string, userId user.UserId) (*user.User, error) {
 	ctx := context.Background()
 
-	userData, err := database.FindById(ur.Client, ctx, userId.ToId())
+	userData, err := database.FindById(ur.Client, ctx, historyId, userId.ToId())
 	if err != nil {
 		return nil, err
 	}
@@ -55,10 +55,10 @@ func (ur *ImplUserRepository) FindById(userId user.UserId) (*user.User, error) {
 	return ConvertDataToUser(*userData)
 }
 
-func (ur *ImplUserRepository) FindByPos(pos user.Position) (*user.User, error) {
+func (ur *ImplUserRepository) FindByPos(historyId string, pos user.Position) (*user.User, error) {
 	ctx := context.Background()
 
-	userData, err := database.FindByPos(ur.Client, ctx, pos.GetX(), pos.GetY())
+	userData, err := database.FindByPos(ur.Client, ctx, historyId, pos.GetX(), pos.GetY())
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +66,10 @@ func (ur *ImplUserRepository) FindByPos(pos user.Position) (*user.User, error) {
 	return ConvertDataToUser(*userData)
 }
 
-func (ur *ImplUserRepository) FindLatest() (*user.User, error) {
+func (ur *ImplUserRepository) FindLatest(historyId string) (*user.User, error) {
 	ctx := context.Background()
 
-	userData, err := database.FindLatest(ur.Client, ctx)
+	userData, err := database.FindLatest(ur.Client, ctx, historyId)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (ur *ImplUserRepository) FindLatest() (*user.User, error) {
 	return ConvertDataToUser(*userData)
 }
 
-func (ur *ImplUserRepository) GetLatestArray() ([]user.User, error) {
+func (ur *ImplUserRepository) GetLatestArray(historyId string) ([]user.User, error) {
 	ctx := context.Background()
 
 	targetPosition := user.NewPosition(0, 0)
@@ -86,7 +86,7 @@ func (ur *ImplUserRepository) GetLatestArray() ([]user.User, error) {
 	for {
 		targetX := targetPosition.GetX()
 		targetY := targetPosition.GetY()
-		latestData, err := database.FindByPos(ur.Client, ctx, targetX, targetY)
+		latestData, err := database.FindByPos(ur.Client, ctx, historyId, targetX, targetY)
 
 		if errors.Is(err, domain.ErrNoLatestUser) || !latestData.IsDrawn {
 			break
@@ -109,11 +109,11 @@ func (ur *ImplUserRepository) GetLatestArray() ([]user.User, error) {
 	return userArray, nil
 }
 
-func (ur *ImplUserRepository) Update(user user.User) error {
+func (ur *ImplUserRepository) Update(historyId string, user user.User) error {
 	ctx := context.Background()
 	userData := ConvertUserToData(user)
 
-	err := database.Update(ur.Client, ctx, *userData)
+	err := database.Update(ur.Client, ctx, historyId, *userData)
 	if err != nil {
 		return err
 	}
@@ -121,10 +121,10 @@ func (ur *ImplUserRepository) Update(user user.User) error {
 	return nil
 }
 
-func (ur *ImplUserRepository) Delete(userId user.UserId) error {
+func (ur *ImplUserRepository) Delete(historyId string, userId user.UserId) error {
 	ctx := context.Background()
 
-	err := database.Delete(ur.Client, ctx, userId.ToId())
+	err := database.Delete(ur.Client, ctx, historyId, userId.ToId())
 	if err != nil {
 		return err
 	}
