@@ -2,11 +2,11 @@ package controller
 
 import (
 	context "context"
+	"fmt"
 
 	usecase "github.com/hrm1810884/works-hai-backend/application/usecase"
 	impl_repository "github.com/hrm1810884/works-hai-backend/infrastructure/repository"
 	ogen "github.com/hrm1810884/works-hai-backend/ogen"
-	"golang.org/x/text/number"
 )
 
 func (h *HaiHandler) RebaseDatabaseGet(ctx context.Context) (ogen.RebaseDatabaseGetRes, error) {
@@ -34,6 +34,7 @@ func (h *HaiHandler) RebaseDatabaseGet(ctx context.Context) (ogen.RebaseDatabase
 
 	err = rebaseDatabaseUsecase.OverrideInitialImage()
 	if err != nil {
+		fmt.Printf("failed to OverrideInitialImage(): %s", err)
 		return &ogen.RebaseDatabaseGetOK{
 			Success: false,
 		}, nil

@@ -145,17 +145,20 @@ func (ur *ImplUserRepository) DeleteImagesExceptCenter() (error) {
 		if userData.PosX != 0 || userData.PosY != 0 {
 			userId, err := uuid.Parse(userData.UserId)
 			if err != nil {
+				fmt.Print("failed to convert id to uuid: %w", err);
 				return fmt.Errorf("failed to convert id to uuid: %w", err)
 			}
 
 			userIdObj, err := user.NewUserId(userId)
 			if err != nil {
+				fmt.Print("failed to instantiate UserId from userId: %w", err);
 				return fmt.Errorf("failed to instantiate UserId from userId: %w", err)
 			}
 
 			err = ur.Delete(*userIdObj);
 			if err != nil {
-				fmt.Println(err)
+				fmt.Print("failed to instantiate UserId from userId: %w", err);
+				return fmt.Errorf("failed to delete image: %w", err)
 			}
 		}
 	}
