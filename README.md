@@ -1,6 +1,6 @@
 # works-hai-backend
-
-## 実行手順
+FE: https://github.com/hrm1810884/works-hai-frontend
+## getting started
 
 1. install go and goimports
 
