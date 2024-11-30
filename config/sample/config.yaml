@@ -1,0 +1,9 @@
+server:
+  dev: 12.34.56.78:8080
+  api: "your-api"
+firebase:
+  bucket: your-bucket.appspot.com
+  database: https://your-database.your-area.firebasedatabase.app/
+python:
+  host: 127.0.0.1:2000
+  endpoint: human-drawing
