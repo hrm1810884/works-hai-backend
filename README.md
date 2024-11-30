@@ -2,31 +2,40 @@
 
 ## 実行手順
 
-1. go をインストール
-2. goimports をインストール：
+1. install go and goimports
 
 ```
 go install golang.org/x/tools/cmd/goimports@latest
 ```
 
-3. トップディレクトリ下に image ディレクトリを手動で作成
-4. （lint 関係消して）make
-5. config ディレクトリ下に、Haruma から渡される private ディレクトリを配置
-6. （eng.ut-1x に接続した状態で）ipconfig して、[自分の ip アドレス]:8080 を config/private/config.yaml の dev に書く
-7. config/private/cors.json の ip も修正する
-8. ./main.exe でサーバーが立つ
+3. create image directory for tmp file placement
 
-## 注意
+```
+mkdir image
+```
+5. copy config files and fill your neccessary information
+```
+cd config
+mkdir private
+cp sample/* private/*
+```
+6. makefile
+```
+make
+```
+8. run ./main and server!!
 
-CORS は Firebase 側にも反映させないといけない
+## for more...
 
-現在の設定を確認する方法（Firebase にログイン必要）：
+you need to setup your firebase on CORS settings
+
+check your current settings
 
 ```
 gsutil cors get gs://*****.appspot.com
 ```
 
-cors.json があるディレクトリで ↓ を実行すると設定が反映される：
+in private dir, run bellow, then your cors.json setting is reflected in your firebase
 
 ```
 gsutil cors set cors.json gs://*****.appspot.com
